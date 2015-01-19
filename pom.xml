@@ -1,51 +1,30 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.leidos.xchangecore.core.infrastructure</groupId>
-    <artifactId>xmpp</artifactId>
-    <packaging>pom</packaging>
-    <name>Core's XMPP</name>
-    <version>1.0.0</version>
+    <parent>
+        <groupId>com.leidos.xchangecore.core</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
 
-    <properties>
-        <infrastructure.xmpp.version>1.2.0</infrastructure.xmpp.version>
-        <spring.integrations.version>1.0.4.RELEASE</spring.integrations.version>
-        <infrastructure.version>1.2.0</infrastructure.version>
-    </properties>
-
-    <modules>
-        <module>extensions</module>
-        <module>communications</module>
-        <module>apps</module>
-    </modules>
+    <artifactId>infra-xmpp</artifactId>
+    <packaging>jar</packaging>
+    <name>xCahngeCore's XMPP</name>
 
     <dependencies>
+
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.4.3</version>
+            <groupId>com.leidos.xchangecore.core</groupId>
+            <artifactId>infra-messages</artifactId>
+            <version>${infrastructure.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.4.3</version>
+            <groupId>com.leidos.xchangecore.core</groupId>
+            <artifactId>infra-services</artifactId>
+            <version>${infrastructure.version}</version>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.4</version>
-        </dependency>
-        <!--
-            <dependency>
-            <groupId>junit-addons</groupId>
-            <artifactId>junit-addons</artifactId>
-            <version>1.4</version>
-            <type>jar</type>
-            </dependency>
-        -->
         <dependency>
             <groupId>org.igniterealtime.smack</groupId>
             <artifactId>smack</artifactId>
@@ -57,27 +36,5 @@
             <version>3.2.1</version>
         </dependency>
     </dependencies>
-
-
-    <repositories>
-        <repository>
-            <id>xchangecore-mvn-repo</id>
-            <url>https://github.com/huangdy/xchangecore-mvn-repo/tree/master/releases</url>
-        </repository>
-    </repositories>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
