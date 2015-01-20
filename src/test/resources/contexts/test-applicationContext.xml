@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans 
-    xmlns="http://www.springframework.org/schema/beans" 
-    xmlns:util="http://www.springframework.org/schema/util"
-    xmlns:aop="http://www.springframework.org/schema/aop" 
-    xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:tx="http://www.springframework.org/schema/tx" 
-    xmlns:security="http://www.springframework.org/schema/security"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:integration="http://www.springframework.org/schema/integration"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:integration="http://www.springframework.org/schema/integration"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.2.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2..xsd
@@ -23,11 +18,12 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
     <integration:publish-subscribe-channel id="coreStatusUpdateChannel" />
     <integration:publish-subscribe-channel id="joinedInterestGroupNotificationChannel" />
     <integration:publish-subscribe-channel id="joinedPublishProductNotificationChannel" />
-	<integration:publish-subscribe-channel id="productPublicationStatusNotificationChannel" />
-	<integration:publish-subscribe-channel id="deleteJoinedInterestGroupNotificationChannel" />
-	<integration:publish-subscribe-channel id="deleteJoinedProductNotificationChannel" />
-    
-    <bean id="coreConnection" class="com.saic.uicds.xmpp.communications.CoreConnectionImpl">
+    <integration:publish-subscribe-channel id="productPublicationStatusNotificationChannel" />
+    <integration:publish-subscribe-channel id="deleteJoinedInterestGroupNotificationChannel" />
+    <integration:publish-subscribe-channel id="deleteJoinedProductNotificationChannel" />
+
+    <bean id="coreConnection"
+        class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.CoreConnectionImpl">
 
         <property name="coreStatusUpdateChannel" ref="coreStatusUpdateChannel" />
 
@@ -63,17 +59,20 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         </property>
     </bean>
 
-    <bean id="core2CoreMessageProcessor" class="com.saic.uicds.xmpp.communications.Core2CoreMessageProcessor">
+    <bean id="core2CoreMessageProcessor"
+        class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.Core2CoreMessageProcessor">
         <property name="coreConnection" ref="coreConnection" />
         <property name="core2CoreMessageNotificationChannel" ref="core2CoreMessageNotificationChannel" />
     </bean>
 
-    <bean id="interestManager" class="com.saic.uicds.xmpp.communications.InterestManagerImpl">
+    <bean id="interestManager"
+        class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManagerImpl">
         <property name="coreConnection" ref="coreConnection" />
         <property name="owningCoreWorkProductNotificationChannel" ref="owningCoreWorkProductNotificationChannel" />
     </bean>
 
-    <bean id="interestGroupManager" class="com.saic.uicds.xmpp.communications.InterestGroupManager">
+    <bean id="interestGroupManager"
+        class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestGroupManager">
         <property name="joinedInterestGroupNotificationChannel" ref="joinedInterestGroupNotificationChannel" />
         <property name="joinedPublishProductNotificationChannel" ref="joinedPublishProductNotificationChannel" />
         <property name="productPublicationStatusNotificationChannel" ref="productPublicationStatusNotificationChannel" />
@@ -83,13 +82,14 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <property name="interestManager" ref="interestManager" />
     </bean>
 
-    <bean id="communicationsServiceXmpp" class="com.saic.uicds.xmpp.communications.CommunicationsServiceXmppImpl">
+    <bean id="communicationsServiceXmpp"
+        class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommunicationsServiceXmppImpl">
         <property name="coreRosterChannel" ref="coreRosterChannel" />
         <property name="core2CoreMessageProcessor" ref="core2CoreMessageProcessor" />
         <property name="interestGroupManager" ref="interestGroupManager" />
     </bean>
 
-    <bean id="connectionChecker" class="com.saic.uicds.xmpp.apps.ConnectionChecker">
+    <bean id="connectionChecker" class="com.leidos.xchangecore.core.infrastructure.xmpp.apps.ConnectionChecker">
         <property name="coreConnection" ref="coreConnection" />
     </bean>
 
@@ -97,7 +97,8 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
 
      
     <!-- MESSAGE CHANNELS -->
-   
-    <bean id="xmppMessageReceiver" class="com.saic.uicds.xmpp.communications.XmppMessageReceiver"/> 
-    
+
+    <bean id="xmppMessageReceiver"
+        class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.XmppMessageReceiver" />
+
 </beans>

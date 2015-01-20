@@ -12,8 +12,7 @@ import org.jivesoftware.smack.packet.XMPPError;
 
 import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.ArbitraryIQ;
 
-public class CommandWithReplyImpl
-    implements CommandWithReply {
+public class CommandWithReplyImpl implements CommandWithReply {
 
     private final XmppConnection connection;
     private final String packetID;
@@ -64,7 +63,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#getErrorCode()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#getErrorCode
+     * ()
      */
     @Override
     public int getErrorCode() {
@@ -78,7 +79,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#getErrorCondition()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#getErrorCondition
+     * ()
      */
     @Override
     public String getErrorCondition() {
@@ -89,7 +92,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#getErrorMessage()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#getErrorMessage
+     * ()
      */
     @Override
     public String getErrorMessage() {
@@ -100,7 +105,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#getErrorType()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#getErrorType
+     * ()
      */
     @Override
     public XMPPError.Type getErrorType() {
@@ -111,7 +118,8 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#getResult()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#getResult()
      */
     @Override
     public IQ getResult() {
@@ -122,7 +130,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#getSubscriptionID()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#getSubscriptionID
+     * ()
      */
     @Override
     public String getSubscriptionID() {
@@ -130,8 +140,12 @@ public class CommandWithReplyImpl
         return subscriptionID;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#getXMPPError()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#getXMPPError
+     * ()
      */
     @Override
     public XMPPError getXMPPError() {
@@ -142,7 +156,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#isInvalidJID()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#isInvalidJID
+     * ()
      */
     @Override
     public boolean isInvalidJID() {
@@ -153,7 +169,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#isInvalidPayload()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#isInvalidPayload
+     * ()
      */
     @Override
     public boolean isInvalidPayload() {
@@ -164,7 +182,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#isItemForbidden()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#isItemForbidden
+     * ()
      */
     @Override
     public boolean isItemForbidden() {
@@ -175,7 +195,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#isItemRequired()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#isItemRequired
+     * ()
      */
     @Override
     public boolean isItemRequired() {
@@ -186,7 +208,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#isPayloadRequired()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#isPayloadRequired
+     * ()
      */
     @Override
     public boolean isPayloadRequired() {
@@ -197,7 +221,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#isPayloadTooBig()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#isPayloadTooBig
+     * ()
      */
     @Override
     public boolean isPayloadTooBig() {
@@ -208,7 +234,9 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#isUnsupported()
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#isUnsupported
+     * ()
      */
     @Override
     public boolean isUnsupported() {
@@ -219,7 +247,8 @@ public class CommandWithReplyImpl
     /*
      * (non-Javadoc)
      * 
-     * @see com.saic.uicds.xmpp.communications.CommandWithReply#waitForSuccessOrFailure()
+     * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommandWithReply#
+     * waitForSuccessOrFailure()
      */
     @Override
     public boolean waitForSuccessOrFailure() {
@@ -238,8 +267,8 @@ public class CommandWithReplyImpl
             collector.cancel();
 
             if (result == null) {
-                errorMessage = "No response from the server within " +
-                               connection.getWaitTimeInSeconds() + " seconds";
+                errorMessage = "No response from the server within "
+                        + connection.getWaitTimeInSeconds() + " seconds";
                 success = false;
             } else if (result.getType() == IQ.Type.ERROR) {
                 xmppError = result.getError();
@@ -260,43 +289,43 @@ public class CommandWithReplyImpl
                 if (result.getError() != null) {
                     PacketExtension pe = null;
                     pe = result.getError().getExtension("unsupported",
-                        "http://jabber.org/protocol/pubsub#errors");
+                            "http://jabber.org/protocol/pubsub#errors");
                     if (pe != null) {
                         unsupported = true;
                         errorMessage += " - (action is unsupported by the server)";
                     }
                     pe = result.getError().getExtension("payload-too-big",
-                        "http://jabber.org/protocol/pubsub#errors");
+                            "http://jabber.org/protocol/pubsub#errors");
                     if (pe != null) {
                         payloadTooBig = true;
                         errorMessage += " - (payload is too big)";
                     }
                     pe = result.getError().getExtension("invalid-payload",
-                        "http://jabber.org/protocol/pubsub#errors");
+                            "http://jabber.org/protocol/pubsub#errors");
                     if (pe != null) {
                         invalidPayload = true;
                         errorMessage += " - (invalid payload)";
                     }
                     pe = result.getError().getExtension("item-required",
-                        "http://jabber.org/protocol/pubsub#errors");
+                            "http://jabber.org/protocol/pubsub#errors");
                     if (pe != null) {
                         itemRequired = true;
                         errorMessage += " - (item element is required for this node)";
                     }
                     pe = result.getError().getExtension("payload-required",
-                        "http://jabber.org/protocol/pubsub#errors");
+                            "http://jabber.org/protocol/pubsub#errors");
                     if (pe != null) {
                         payloadRequired = true;
                         errorMessage += " - (payload is required for this node)";
                     }
                     pe = result.getError().getExtension("item-forbidden",
-                        "http://jabber.org/protocol/pubsub#errors");
+                            "http://jabber.org/protocol/pubsub#errors");
                     if (pe != null) {
                         itemForbidden = true;
                         errorMessage += " - (cannot publish item to transient node)";
                     }
                     pe = result.getError().getExtension("invalid-jid",
-                        "http://jabber.org/protocol/pubsub#errors");
+                            "http://jabber.org/protocol/pubsub#errors");
                     if (pe != null) {
                         invalidJID = true;
                         errorMessage += " - (the bare JID portions of the JIDs do not match)";

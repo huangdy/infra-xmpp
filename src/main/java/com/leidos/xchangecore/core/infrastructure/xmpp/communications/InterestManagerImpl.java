@@ -48,13 +48,11 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.PubSubEve
  *
  */
 
-public class InterestManagerImpl
-    implements InterestManager {
+public class InterestManagerImpl implements InterestManager {
 
     // Class to handle the pubsub event messages that are notfications of changes in
     // work products.
-    protected class ListenerAdapter
-        implements PacketListener {
+    protected class ListenerAdapter implements PacketListener {
 
         public ListenerAdapter() {
 
@@ -74,15 +72,17 @@ public class InterestManagerImpl
 
                 // logger.debug("   pubsub: "+pubsub.toXML());
                 // Handle item updates
-                Iterator<com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Item> it = pubsub.getItems();
+                Iterator<com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Item> it = pubsub
+                        .getItems();
                 while (it.hasNext()) {
                     String item = it.next().toXML();
                     // logger.debug("    ITEM: " + item);
 
                     // send out the node data to the Communications Service
                     PublishProductMessage message = new PublishProductMessage(item,
-                                                                              coreConnection.getServer());
-                    org.springframework.integration.core.Message<PublishProductMessage> notification = new GenericMessage<PublishProductMessage>(message);
+                            coreConnection.getServer());
+                    org.springframework.integration.core.Message<PublishProductMessage> notification = new GenericMessage<PublishProductMessage>(
+                            message);
                     if (owningCoreWorkProductNotificationChannel != null) {
                         logger.info("********** Sending product publication to CommunicationsService");
                         owningCoreWorkProductNotificationChannel.send(notification);
@@ -135,8 +135,12 @@ public class InterestManagerImpl
         nodeManagers = new HashMap<String, NodeManager>();
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#addCollection(java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#addCollection
+     * (java.lang.String)
      */
     @Override
     public boolean addCollection(String pubsubService, String interestGroupRoot) {
@@ -148,8 +152,12 @@ public class InterestManagerImpl
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#addFolder(java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#addFolder(
+     * java.lang.String, java.lang.String)
      */
     @Override
     public String addFolder(String pubsubService, String folder, String name) {
@@ -161,8 +169,12 @@ public class InterestManagerImpl
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#addIQListener(org.jivesoftware.smack.PacketListener, org.jivesoftware.smack.filter.PacketFilter)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#addIQListener
+     * (org.jivesoftware.smack.PacketListener, org.jivesoftware.smack.filter.PacketFilter)
      */
     @Override
     public void addIQListener(PacketListener listener, PacketFilter filter) {
@@ -173,8 +185,12 @@ public class InterestManagerImpl
         coreConnection.addPacketListener(listener, andFilter);
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#addMessageListener(org.jivesoftware.smack.PacketListener, org.jivesoftware.smack.filter.PacketFilter)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#addMessageListener
+     * (org.jivesoftware.smack.PacketListener, org.jivesoftware.smack.filter.PacketFilter)
      */
     @Override
     public void addMessageListener(PacketListener listener, PacketFilter filter) {
@@ -185,15 +201,18 @@ public class InterestManagerImpl
         coreConnection.addPacketListener(listener, andFilter);
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#addNode(java.lang.String, java.lang.String, com.saic.uicds.xmpp.communications.NodeManager.NODE_ITEM_TYPE, java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#addNode(java
+     * .lang.String, java.lang.String,
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.NodeManager.NODE_ITEM_TYPE,
+     * java.lang.String)
      */
     @Override
-    public boolean addNode(String pubsubService,
-                           String folder,
-                           String topic,
-                           NODE_ITEM_TYPE type,
-                           String topicType) {
+    public boolean addNode(String pubsubService, String folder, String topic, NODE_ITEM_TYPE type,
+            String topicType) {
 
         if (nodeManagers.containsKey(pubsubService)) {
             return nodeManagers.get(pubsubService).addNode(folder, topic, type, topicType);
@@ -213,8 +232,10 @@ public class InterestManagerImpl
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#cleanup()
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#cleanup()
      */
     @Override
     @PreDestroy
@@ -222,12 +243,16 @@ public class InterestManagerImpl
 
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#getAllNodeItems(java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#getAllNodeItems
+     * (java.lang.String)
      */
     @Override
     public ArrayList<String> getAllNodeItems(String pubsubService, String node)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
 
         if (nodeManagers.containsKey(pubsubService)) {
             return nodeManagers.get(pubsubService).getAllNodeItems(node);
@@ -236,8 +261,12 @@ public class InterestManagerImpl
         return new ArrayList<String>();
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#getCoreConnection()
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#getCoreConnection
+     * ()
      */
     @Override
     public CoreConnection getCoreConnection() {
@@ -245,8 +274,12 @@ public class InterestManagerImpl
         return coreConnection;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#getFolderContents(java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#getFolderContents
+     * (java.lang.String)
      */
     @Override
     public DiscoverItems getFolderContents(String pubsubService, String interestGroupNode) {
@@ -258,8 +291,12 @@ public class InterestManagerImpl
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#getNodeManager(java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#getNodeManager
+     * (java.lang.String)
      */
     @Override
     public NodeManager getNodeManager(String pubsubService) {
@@ -273,8 +310,11 @@ public class InterestManagerImpl
         return nodeManager;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#getOwningCoreWorkProductNotificationChannel()
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#
+     * getOwningCoreWorkProductNotificationChannel()
      */
     @Override
     public MessageChannel getOwningCoreWorkProductNotificationChannel() {
@@ -282,8 +322,11 @@ public class InterestManagerImpl
         return owningCoreWorkProductNotificationChannel;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#getOwnJid()
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#getOwnJid()
      */
     @Override
     public String getOwnJid() {
@@ -291,8 +334,11 @@ public class InterestManagerImpl
         return coreConnection.getJID();
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#initialize()
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#initialize()
      */
     @Override
     @PostConstruct
@@ -313,8 +359,12 @@ public class InterestManagerImpl
         logger.debug("initialized done");
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#isInitialized()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#isInitialized
+     * ()
      */
     @Override
     public boolean isInitialized() {
@@ -322,8 +372,12 @@ public class InterestManagerImpl
         return coreConnection != null;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#publishToNode(java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#publishToNode
+     * (java.lang.String, java.lang.String)
      */
     @Override
     public boolean publishToNode(String pubsubService, String nodeName, String itemText) {
@@ -335,8 +389,11 @@ public class InterestManagerImpl
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#refreshSubscriptions()
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#
+     * refreshSubscriptions()
      */
     @Override
     public void refreshSubscriptions(String pubsubService) {
@@ -348,8 +405,12 @@ public class InterestManagerImpl
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#removeItem(java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#removeItem
+     * (java.lang.String, java.lang.String)
      */
     @Override
     public boolean removeItem(String pubsubService, String nodeName, String itemUUID) {
@@ -362,14 +423,19 @@ public class InterestManagerImpl
     }
 
     // /* (non-Javadoc)
-    // * @see com.saic.uicds.xmpp.communications.InterestManager#unsubscribe(java.lang.String)
+    // * @see
+    // com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#unsubscribe(java.lang.String)
     // */
     // private void unsubscribe(String node) {
     // nodeSubscriptionManager.unsubscribe(node);
     // }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#removeNode(java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#removeNode
+     * (java.lang.String)
      */
     @Override
     public boolean removeNode(String pubsubService, String node) {
@@ -382,8 +448,12 @@ public class InterestManagerImpl
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#removeNode(java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#removeNode
+     * (java.lang.String, java.lang.String)
      */
     @Override
     public boolean removeNode(String pubsubService, String folder, String topic) {
@@ -396,12 +466,16 @@ public class InterestManagerImpl
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#retrieveNodeItem(java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#retrieveNodeItem
+     * (java.lang.String, java.lang.String)
      */
     @Override
     public String retrieveNodeItem(String pubsubService, String node, String wpID)
-        throws IllegalStateException, IllegalArgumentException {
+            throws IllegalStateException, IllegalArgumentException {
 
         if (nodeManagers.containsKey(pubsubService)) {
             return nodeManagers.get(pubsubService).retrieveNodeItem(node, wpID);
@@ -413,11 +487,11 @@ public class InterestManagerImpl
     @Override
     public void sendCleanupJoinedInterestGroupMessage(String remoteJID, String interestGroupID) {
 
-        logger.info("sendCleanupJoinedInterestGroupMessage: remoteJID: " + remoteJID + ", IGID: " +
-                    interestGroupID);
+        logger.info("sendCleanupJoinedInterestGroupMessage: remoteJID: " + remoteJID + ", IGID: "
+                + interestGroupID);
         String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(remoteJID);
-        IQ msg = InterestGrptManagementIQFactory.createCleanupJoinedInterestGroupMessage(coreJIDPlusResource,
-            interestGroupID);
+        IQ msg = InterestGrptManagementIQFactory.createCleanupJoinedInterestGroupMessage(
+                coreJIDPlusResource, interestGroupID);
 
         // logger.debug("sendDeleteJoinedInterestGroupMessage: [" + msg.toXML() + "]");
 
@@ -433,11 +507,11 @@ public class InterestManagerImpl
     @Override
     public void sendDeleteJoinedInterestGroupMessage(String coreJID, String interestGroupID) {
 
-        logger.info("sendDeleteJoinedInterestGroupMessage: remoteJID: " + coreJID + ", IGID: " +
-                    interestGroupID);
+        logger.info("sendDeleteJoinedInterestGroupMessage: remoteJID: " + coreJID + ", IGID: "
+                + interestGroupID);
         String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
-        IQ msg = InterestGrptManagementIQFactory.createDeleteJoinedInterestGroupMessage(coreJIDPlusResource,
-            interestGroupID);
+        IQ msg = InterestGrptManagementIQFactory.createDeleteJoinedInterestGroupMessage(
+                coreJIDPlusResource, interestGroupID);
 
         // logger.debug("sendDeleteJoinedInterestGroupMessage: [" + msg.toXML() + "]");
 
@@ -456,8 +530,8 @@ public class InterestManagerImpl
 
         logger.info("sendDeleteJoinedProductMessage");
         String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
-        IQ msg = InterestGrptManagementIQFactory.createDeleteJoinedProductMessage(coreJIDPlusResource,
-            productID);
+        IQ msg = InterestGrptManagementIQFactory.createDeleteJoinedProductMessage(
+                coreJIDPlusResource, productID);
 
         logger.debug(msg.toXML());
 
@@ -473,18 +547,14 @@ public class InterestManagerImpl
     }
 
     @Override
-    public void sendJoinedPublishProductRequestMessage(String interestGroupId,
-                                                       String owningCore,
-                                                       String productId,
-                                                       String productType,
-                                                       String act,
-                                                       String userID,
-                                                       String product) {
+    public void sendJoinedPublishProductRequestMessage(String interestGroupId, String owningCore,
+            String productId, String productType, String act, String userID, String product) {
 
-        logger.info("sendJoinedPublishProductRequestMessage: interestGroupID=" + interestGroupId +
-                    " owningCore:" + owningCore);
+        logger.info("sendJoinedPublishProductRequestMessage: interestGroupID=" + interestGroupId
+                + " owningCore:" + owningCore);
 
-        String owningCoreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(owningCore);
+        String owningCoreJIDPlusResource = coreConnection
+                .getJIDPlusResourceFromCoreName(owningCore);
 
         // TODO: Need the other stuff, e.g. name, description, lat/long ???
         StringBuffer params = new StringBuffer();
@@ -503,10 +573,8 @@ public class InterestManagerImpl
         productEntry.append(product);
         productEntry.append("</ProductPayload>");
 
-        IQ msg = InterestGrptManagementIQFactory.createJoinedPublishProductRequestMessage(owningCoreJIDPlusResource,
-            params.toString(),
-            config,
-            productEntry.toString());
+        IQ msg = InterestGrptManagementIQFactory.createJoinedPublishProductRequestMessage(
+                owningCoreJIDPlusResource, params.toString(), config, productEntry.toString());
 
         // logger.debug(msg.toXML());
 
@@ -521,13 +589,11 @@ public class InterestManagerImpl
     }
 
     @Override
-    public void sendJoinMessage(String coreJID,
-                                InterestGroup interestGroup,
-                                String interestGroupInfo,
-                                List<String> workProductTypesToShare) {
+    public void sendJoinMessage(String coreJID, InterestGroup interestGroup,
+            String interestGroupInfo, List<String> workProductTypesToShare) {
 
-        logger.info("sendJoinMessage to " + coreJID + " with interestGroupID=" +
-                    interestGroup.interestGroupID);
+        logger.info("sendJoinMessage to " + coreJID + " with interestGroupID="
+                + interestGroup.interestGroupID);
         HashMap<String, String> config = new HashMap<String, String>();
 
         StringBuffer sb = new StringBuffer();
@@ -546,16 +612,14 @@ public class InterestManagerImpl
 
         StringBuffer interestGroupInfoBuffer = new StringBuffer();
         interestGroupInfoBuffer.append(" uuid='" + interestGroup.interestGroupID + "'");
-        interestGroupInfoBuffer.append(" interestGroupType='" + interestGroup.interestGroupType +
-                                       "'");
+        interestGroupInfoBuffer.append(" interestGroupType='" + interestGroup.interestGroupType
+                + "'");
         interestGroupInfoBuffer.append(" owner='" + getOwnJid() + "'");
 
         String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
 
         IQ msg = InterestGrptManagementIQFactory.createJoinMessage(coreJIDPlusResource,
-            interestGroupInfoBuffer.toString(),
-            config,
-            sb.toString());
+                interestGroupInfoBuffer.toString(), config, sb.toString());
 
         // logger.debug(msg.toXML());
 
@@ -570,14 +634,14 @@ public class InterestManagerImpl
     }
 
     @Override
-    public void sendProductPublicationStatusMessage(String requestingCore,
-                                                    String userID,
-                                                    String status) {
+    public void sendProductPublicationStatusMessage(String requestingCore, String userID,
+            String status) {
 
-        logger.info("sendProductPublicationStatusMessage: requestingCore=" + requestingCore +
-                    " userID:" + userID + " status=[" + status + "]");
+        logger.info("sendProductPublicationStatusMessage: requestingCore=" + requestingCore
+                + " userID:" + userID + " status=[" + status + "]");
 
-        String requestingCoreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(requestingCore);
+        String requestingCoreJIDPlusResource = coreConnection
+                .getJIDPlusResourceFromCoreName(requestingCore);
 
         StringBuffer params = new StringBuffer();
         params.append(" userID='" + userID + "'");
@@ -588,9 +652,8 @@ public class InterestManagerImpl
         statustEntry.append(status);
         statustEntry.append("</ProductPublicationStatus>");
 
-        IQ msg = InterestGrptManagementIQFactory.createProductPublicationStatusMessage(requestingCoreJIDPlusResource,
-            params.toString(),
-            statustEntry.toString());
+        IQ msg = InterestGrptManagementIQFactory.createProductPublicationStatusMessage(
+                requestingCoreJIDPlusResource, params.toString(), statustEntry.toString());
 
         // logger.debug(msg.toXML());
 
@@ -619,12 +682,10 @@ public class InterestManagerImpl
     public void sendResignMessage(String coreJID, String interestGroupID, String interestGroupName) {
 
         String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
-        logger.debug("sendResignMessage: remoteJID: " + coreJIDPlusResource + ", IGID: " +
-                     interestGroupID + ", IG Name: " + interestGroupName);
+        logger.debug("sendResignMessage: remoteJID: " + coreJIDPlusResource + ", IGID: "
+                + interestGroupID + ", IG Name: " + interestGroupName);
         IQ msg = InterestGrptManagementIQFactory.createResignMessage(coreJIDPlusResource,
-            interestGroupID,
-            interestGroupName,
-            getOwnJid());
+                interestGroupID, interestGroupName, getOwnJid());
 
         // Fire off the resign message
         // Deal with acknowledgement asynchronously
@@ -638,15 +699,13 @@ public class InterestManagerImpl
     }
 
     @Override
-    public void sendResignRequestMessage(String coreJID,
-                                         String interestGroupID,
-                                         String interestGroupOwner) {
+    public void sendResignRequestMessage(String coreJID, String interestGroupID,
+            String interestGroupOwner) {
 
         logger.debug("sendResignRequestMessage");
         String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
         IQ msg = InterestGrptManagementIQFactory.createResigRequestMessage(coreJIDPlusResource,
-            interestGroupID,
-            interestGroupOwner);
+                interestGroupID, interestGroupOwner);
 
         // logger.debug(msg.toXML());
 
@@ -664,12 +723,11 @@ public class InterestManagerImpl
     @Override
     public void sendUpdateJoinMessage(String coreJID, String interestGroupID, String productType) {
 
-        logger.info("sendUpdateJoinMessage  interestGroupID=" + interestGroupID + " wpType=" +
-                    productType);
+        logger.info("sendUpdateJoinMessage  interestGroupID=" + interestGroupID + " wpType="
+                + productType);
         String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
         IQ msg = InterestGrptManagementIQFactory.createUpdateJoinMessage(coreJIDPlusResource,
-            interestGroupID,
-            productType);
+                interestGroupID, productType);
 
         logger.debug(msg.toXML());
 
@@ -684,8 +742,12 @@ public class InterestManagerImpl
 
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#setCoreConnection(com.saic.uicds.xmpp.communications.CoreConnection)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#setCoreConnection
+     * (com.leidos.xchangecore.core.infrastructure.xmpp.communications.CoreConnection)
      */
     @Override
     public void setCoreConnection(CoreConnection coreConnection) {
@@ -693,8 +755,12 @@ public class InterestManagerImpl
         this.coreConnection = coreConnection;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#setNodeManager(com.saic.uicds.xmpp.communications.NodeManager)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#setNodeManager
+     * (com.leidos.xchangecore.core.infrastructure.xmpp.communications.NodeManager)
      */
     @Override
     public void setNodeManager(NodeManager nodeManager) {
@@ -702,17 +768,26 @@ public class InterestManagerImpl
         nodeManagers.put(nodeManager.getPubsubService(), nodeManager);
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#setOwningCoreWorkProductNotificationChannel(org.springframework.integration.core.MessageChannel)
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#
+     * setOwningCoreWorkProductNotificationChannel
+     * (org.springframework.integration.core.MessageChannel)
      */
     @Override
-    public void setOwningCoreWorkProductNotificationChannel(MessageChannel owningCoreWorkProductNotificationChannel) {
+    public void setOwningCoreWorkProductNotificationChannel(
+            MessageChannel owningCoreWorkProductNotificationChannel) {
 
         this.owningCoreWorkProductNotificationChannel = owningCoreWorkProductNotificationChannel;
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#subscribeToNode(java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#subscribeToNode
+     * (java.lang.String)
      */
     @Override
     public List<String> subscribeToNode(String pubsubService, String node) throws XMPPException {
@@ -744,8 +819,12 @@ public class InterestManagerImpl
         return result.toString();
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#unsubscribeAll()
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#unsubscribeAll
+     * ()
      */
     @Override
     public void unsubscribeAll(String pubsubService) {
@@ -757,8 +836,12 @@ public class InterestManagerImpl
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#unsubscribeAll(java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#unsubscribeAll
+     * (java.lang.String)
      */
     @Override
     public void unsubscribeAllForInterestGroup(String pubsubService, String uuid) {
@@ -770,8 +853,11 @@ public class InterestManagerImpl
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.InterestManager#updateSubscriptionMap()
+    /*
+     * (non-Javadoc)
+     *
+     * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#
+     * updateSubscriptionMap()
      */
     @Override
     public void updateSubscriptionMap(String pubsubService) {

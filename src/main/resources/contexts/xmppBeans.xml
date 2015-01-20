@@ -19,7 +19,7 @@
     <!-- Replace server, servername, and pubsub's host name as appropriate -->
 
     <bean id="baseCoreConnection" abstract="true" destroy-method="cleanup"
-        class="com.saic.uicds.xmpp.communications.CoreConnectionImpl">
+        class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.CoreConnectionImpl">
 
         <property name="server">
             <value>${xmpp.fqdn}</value>
@@ -68,7 +68,7 @@
     </bean>
 
     <bean id="baseInterestManager" abstract="true"
-        class="com.saic.uicds.xmpp.communications.InterestManagerImpl">
+        class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManagerImpl">
     </bean>
 
     <!-- End of XMPP beans -->

@@ -55,8 +55,7 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.communications.util.XmppU
  *
  */
 
-public class CoreConnectionImpl
-    implements CoreConnection {
+public class CoreConnectionImpl implements CoreConnection {
 
     public static final int BAD_FORMAT_CODE = 400;
     public static final String NOT_WELLFORMED_MSG = "Packet XML was not well-formed";
@@ -122,7 +121,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.saic.dctd.uicds.xmpp.communications.CoreConnection#addPacketListener(org.jivesoftware
      * .smack.PacketListener, org.jivesoftware.smack.filter.PacketFilter)
@@ -135,7 +134,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#addRosterEntry(java.lang.String,
      * java.lang.String)
      */
@@ -144,7 +143,8 @@ public class CoreConnectionImpl
 
         ItemType subscription = rosterManager.createEntry(remoteJID, name, null);
         logger.debug("addRosterEntry: [" + remoteJID + "]: subscription: " + subscription);
-        getAgreementDAO().setRemoteCoreMutuallyAgreed(remoteJID, subscription.equals(ItemType.both));
+        getAgreementDAO()
+                .setRemoteCoreMutuallyAgreed(remoteJID, subscription.equals(ItemType.both));
         logger.debug("addRosterEntry: after setRemoteCoreMutuallyAgreed: " + subscription);
         pingManager.addRoster(remoteJID);
         logger.debug("addRosterEntry: after PingManager.addRoster: " + remoteJID);
@@ -154,11 +154,8 @@ public class CoreConnectionImpl
 
         // Throw an exception if the packet XML is not well formed
         if (!XmppUtils.isWellFormed(packet.toXML())) {
-            XMPPError error = new XMPPError(BAD_FORMAT_CODE,
-                                            XMPPError.Type.MODIFY,
-                                            BAD_FORMAT_CONDITION,
-                                            NOT_WELLFORMED_MSG,
-                                            null);
+            XMPPError error = new XMPPError(BAD_FORMAT_CODE, XMPPError.Type.MODIFY,
+                    BAD_FORMAT_CONDITION, NOT_WELLFORMED_MSG, null);
             throw new XMPPException(error);
         }
     }
@@ -166,7 +163,7 @@ public class CoreConnectionImpl
     @Override
     public void checkRoster() {
 
-        //TODO - ddh rosterManager.checkRoster();
+        // TODO - ddh rosterManager.checkRoster();
     }
 
     @Override
@@ -179,7 +176,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#configure()
      */
     @Override
@@ -201,7 +198,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#configure()
      */
     public void configureOwnerConnection(String coreName) {
@@ -218,7 +215,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#connect()
      */
     @Override
@@ -248,7 +245,7 @@ public class CoreConnectionImpl
                         // add packet interceptor
                         PacketFilter presenceFilter = new PacketTypeFilter(Presence.class);
                         PresenceEnrichment presenceEnrichment = new PresenceEnrichment(pos[0],
-                                                                                       pos[1]);
+                                pos[1]);
                         xmppConnection.addPacketInterceptor(presenceEnrichment, presenceFilter);
                     }
                 } else {
@@ -269,14 +266,13 @@ public class CoreConnectionImpl
 
                 // Set the name of this connection to the roster name for this core
                 if (rosterManager.getRosterNameFromJID(getJID()) != null) {
-                    logger.info("====> Set connection name to " +
-                                rosterManager.getRosterNameFromJID(getJID()));
+                    logger.info("====> Set connection name to "
+                            + rosterManager.getRosterNameFromJID(getJID()));
                     setName(rosterManager.getRosterNameFromJID(getJID()));
-                    logger.debug("Adding ourself: JID=" + getJID() + " name=" +
-                                 rosterManager.getRosterNameFromJID(getJID()) + " to roster");
+                    logger.debug("Adding ourself: JID=" + getJID() + " name="
+                            + rosterManager.getRosterNameFromJID(getJID()) + " to roster");
                     rosterManager.createEntry(getJID(),
-                        rosterManager.getRosterNameFromJID(getJID()),
-                        null);
+                            rosterManager.getRosterNameFromJID(getJID()), null);
                 }
 
                 logger.info("initialize PingManger ...");
@@ -296,15 +292,18 @@ public class CoreConnectionImpl
                 return;
             } catch (Exception e) {
                 e.printStackTrace();
-                logger.error("CoreConnection Exception connecting: " + e.getMessage() + " " +
-                             e.toString());
+                logger.error("CoreConnection Exception connecting: " + e.getMessage() + " "
+                        + e.toString());
                 return;
             }
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.XmppConnection#createCommandWithReply(org.jivesoftware.smack.packet.Packet)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.XmppConnection#
+     * createCommandWithReply(org.jivesoftware.smack.packet.Packet)
      */
     @Override
     public CommandWithReply createCommandWithReply(Packet packet) throws XMPPException {
@@ -316,7 +315,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.saic.dctd.uicds.xmpp.communications.CoreConnection#createPacketCollector(org.jivesoftware
      * .smack.filter.PacketFilter)
@@ -339,7 +338,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.saic.dctd.uicds.xmpp.communications.CoreConnection#deleteRosterEntry(java.lang.String)
      */
@@ -352,7 +351,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#disconnect()
      */
     @Override
@@ -414,8 +413,8 @@ public class CoreConnectionImpl
                     if (!isConnected()) {
                         logger.error("XMPP Server not found (not connected)");
                     } else {
-                        logger.error("XMPP Server not found error. pubsub." +
-                                     xmppConnection.getHost() + " may not be resolvable");
+                        logger.error("XMPP Server not found error. pubsub."
+                                + xmppConnection.getHost() + " may not be resolvable");
                     }
                 } else {
                     logger.error("discovering items for node: " + node);
@@ -440,7 +439,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getConfiguration()
      */
     @Override
@@ -456,14 +455,15 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.saic.dctd.uicds.xmpp.communications.CoreConnection#getCoreNameFromJID(java.lang.String)
      */
     @Override
     public String getCoreNameFromJID(String coreJID) {
 
-        return rosterManager.getRosterNameFromJID(org.jivesoftware.smack.util.StringUtils.parseBareAddress(coreJID).toLowerCase());
+        return rosterManager.getRosterNameFromJID(org.jivesoftware.smack.util.StringUtils
+                .parseBareAddress(coreJID).toLowerCase());
     }
 
     public MessageChannel getCoreStatusUpdateChannel() {
@@ -473,7 +473,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getDebug()
      */
     @Override
@@ -484,7 +484,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getDebugBoolean()
      */
     @Override
@@ -495,7 +495,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getFileManager()
      */
     @Override
@@ -511,7 +511,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getInterestGroupRoot()
      */
     @Override
@@ -522,7 +522,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getJID()
      */
     @Override
@@ -534,7 +534,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.saic.dctd.uicds.xmpp.communications.CoreConnection#getJIDFromCoreName(java.lang.String)
      */
@@ -546,7 +546,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getJIDPlusResource()
      */
     @Override
@@ -557,7 +557,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.saic.dctd.uicds.xmpp.communications.CoreConnection#getJIDFromCoreName(java.lang.String)
      */
@@ -569,7 +569,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getName()
      */
     @Override
@@ -580,7 +580,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getPassword()
      */
     @Override
@@ -596,7 +596,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getPort()
      */
     @Override
@@ -607,7 +607,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getPortInt()
      */
     @Override
@@ -618,7 +618,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getPubSubSvc()
      */
     @Override
@@ -629,7 +629,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getResource()
      */
     @Override
@@ -645,7 +645,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getRosterByName()
      */
     @Override
@@ -656,7 +656,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getRosterStatus()
      */
     @Override
@@ -667,7 +667,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getServer()
      */
     @Override
@@ -678,7 +678,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getServername()
      */
     @Override
@@ -689,7 +689,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getUsername()
      */
     @Override
@@ -728,7 +728,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#isConnected()
      */
     @Override
@@ -739,7 +739,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#isCoreInRoster(java.lang.String)
      */
     @Override
@@ -750,7 +750,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#isCoreOnline(java.lang.String)
      */
     @Override
@@ -785,7 +785,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.saic.dctd.uicds.xmpp.communications.CoreConnection#removePacketListener(org.jivesoftware
      * .smack.PacketListener)
@@ -815,8 +815,8 @@ public class CoreConnectionImpl
             ItemType subscription = roster.getType();
             if (isOnline) {
                 if (subscription.equals(ItemType.both)) {
-                    logger.debug("resetRemoteStatus: set the remoteJID: " + remoteJID + " to " +
-                                 (isOnline ? "available" : "unavailable"));
+                    logger.debug("resetRemoteStatus: set the remoteJID: " + remoteJID + " to "
+                            + (isOnline ? "available" : "unavailable"));
                     sendCoreStatusUpdate(remoteJID, "available", "", "");
                 }
             } else {
@@ -829,18 +829,14 @@ public class CoreConnectionImpl
     }
 
     @Override
-    public void sendCoreStatusUpdate(String remotJID,
-                                     String coreStatus,
-                                     String latitude,
-                                     String longitude) {
+    public void sendCoreStatusUpdate(String remotJID, String coreStatus, String latitude,
+            String longitude) {
 
-        logger.info("sendCoreStatusUpdate: JID: " + remotJID + ", status: " + coreStatus +
-                    (latitude.length() > 0 ? ", " + latitude + "/" + longitude : ""));
+        logger.info("sendCoreStatusUpdate: JID: " + remotJID + ", status: " + coreStatus
+                + (latitude.length() > 0 ? ", " + latitude + "/" + longitude : ""));
 
-        CoreStatusUpdateMessage msg = new CoreStatusUpdateMessage(remotJID,
-                                                                  coreStatus,
-                                                                  latitude,
-                                                                  longitude);
+        CoreStatusUpdateMessage msg = new CoreStatusUpdateMessage(remotJID, coreStatus, latitude,
+                longitude);
         Message<CoreStatusUpdateMessage> update = new GenericMessage<CoreStatusUpdateMessage>(msg);
         synchronized (this) {
             getCoreStatusUpdateChannel().send(update);
@@ -875,7 +871,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.saic.dctd.uicds.xmpp.communications.CoreConnection#sendPacket(org.jivesoftware.smack.
      * packet.Packet)
@@ -898,8 +894,11 @@ public class CoreConnectionImpl
     // return rosterManager.getCoresRosterNameFromServerName(coreServer);
     // }
 
-    /* (non-Javadoc)
-     * @see com.saic.uicds.xmpp.communications.CoreConnection#sendPacketCheckWellFormed(org.jivesoftware.smack.packet.Packet)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.CoreConnection#
+     * sendPacketCheckWellFormed(org.jivesoftware.smack.packet.Packet)
      */
     @Override
     public void sendPacketCheckWellFormed(Packet packet) throws XMPPException {
@@ -923,15 +922,15 @@ public class CoreConnectionImpl
      * public void sendJoinMessage(String coreName, InterestGroup interestGroup) {
      * interestManager.sendJoinMessage(rosterManager.getJIDFromRosterName(coreName), interestGroup);
      * }
-     *
+     * 
      * public void sendResignMessage(String coreName, InterestGroup interestGroup) {
      * interestManager.sendResignMessage(rosterManager.getJIDFromRosterName(coreName),
      * interestGroup); }
-     *
+     * 
      * public void transferFileToCore(String coreName, String fileName) {
      * fileManager.transferFileToCore(rosterManager.getJIDFromRosterName(coreName) + "/manager",
      * fileName); }
-     *
+     * 
      * public void sendResignRequestMessage(String coreName, InterestGroup interestGroup) {
      * interestManager.sendResignRequestMessage(rosterManager.getJIDFromRosterName(coreName),
      * interestGroup); }
@@ -949,7 +948,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#setDebug(java.lang.String)
      */
     @Override
@@ -962,7 +961,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.saic.dctd.uicds.xmpp.communications.CoreConnection#setInterestGroupGroupRoot(java.lang
      * .String)
@@ -975,7 +974,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#setName(java.lang.String)
      */
     @Override
@@ -988,7 +987,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#setPassword(java.lang.String)
      */
     @Override
@@ -999,14 +998,11 @@ public class CoreConnectionImpl
         }
     }
 
-    /* ddh
-    public String getCoreConfigFile() {
-        return coreConfigFile;
-    }
-
-    public void setCoreConfigFile(String coreConfigFile) {
-        this.coreConfigFile = coreConfigFile;
-    }
+    /*
+     * ddh public String getCoreConfigFile() { return coreConfigFile; }
+     * 
+     * public void setCoreConfigFile(String coreConfigFile) { this.coreConfigFile = coreConfigFile;
+     * }
      */
 
     public void setPingInterval(int pingInterval) {
@@ -1016,7 +1012,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#setPort(java.lang.String)
      */
     @Override
@@ -1029,7 +1025,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#setPubSubSvc(java.lang.String)
      */
     @Override
@@ -1050,7 +1046,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#setResource(java.lang.String)
      */
     @Override
@@ -1071,15 +1067,13 @@ public class CoreConnectionImpl
 
     protected void setResourcePriority() {
 
-        xmppConnection.sendPacket(new Presence(Presence.Type.available,
-                                               null,
-                                               77,
-                                               Presence.Mode.available));
+        xmppConnection.sendPacket(new Presence(Presence.Type.available, null, 77,
+                Presence.Mode.available));
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#setServer(java.lang.String)
      */
     @Override
@@ -1092,7 +1086,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#setServername(java.lang.String)
      */
     @Override
@@ -1107,7 +1101,7 @@ public class CoreConnectionImpl
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#setUsername(java.lang.String)
      */
     @Override

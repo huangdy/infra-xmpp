@@ -33,7 +33,7 @@ http://www.springframework.org/schema/integration http://www.springframework.org
 
     <integration:publish-subscribe-channel id="deleteInterestGroupSharedFromRemoteCoreChannel" />
 
-    <bean id="agreementDAO" class="com.saic.uicds.core.infrastructure.dao.hb.AgreementDAOHibernate" />
+    <bean id="agreementDAO" class="com.leidos.xchangecore.core.infrastructure.dao.hb.AgreementDAOHibernate" />
 
     <!-- Communications Service XMPP beans -->
     
@@ -47,13 +47,13 @@ http://www.springframework.org/schema/integration http://www.springframework.org
         <property name="owningCoreWorkProductNotificationChannel" ref="owningCoreWorkProductNotificationChannel" />
     </bean>
     
-    <bean id="core2CoreMessageProcessor" class="com.saic.uicds.xmpp.communications.Core2CoreMessageProcessor">
+    <bean id="core2CoreMessageProcessor" class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.Core2CoreMessageProcessor">
         <property name="coreConnection" ref="coreConnection" />
         <property name="core2CoreMessageNotificationChannel" ref="core2CoreMessageNotificationChannel" />
         <property name="deleteInterestGroupSharedFromRemoteCoreChannel" ref="deleteInterestGroupSharedFromRemoteCoreChannel" />
     </bean>
 
-    <bean id="interestGroupManager" class="com.saic.uicds.xmpp.communications.InterestGroupManager">
+    <bean id="interestGroupManager" class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestGroupManager">
         <property name="joinedInterestGroupNotificationChannel" ref="joinedInterestGroupNotificationChannel" />
         <property name="joinedPublishProductNotificationChannel" ref="joinedPublishProductNotificationChannel" />
         <property name="productPublicationStatusNotificationChannel" ref="productPublicationStatusNotificationChannel" />
@@ -68,14 +68,14 @@ http://www.springframework.org/schema/integration http://www.springframework.org
         </property>
     </bean>
 
-    <bean id="communicationsServiceXmpp" class="com.saic.uicds.xmpp.communications.CommunicationsServiceXmppImpl">
+    <bean id="communicationsServiceXmpp" class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommunicationsServiceXmppImpl">
         <property name="coreRosterChannel" ref="coreRosterChannel" />
         <property name="core2CoreMessageProcessor" ref="core2CoreMessageProcessor" />
         <property name="interestGroupManager" ref="interestGroupManager" />
     </bean>
 
     <!--
-        <bean id="orphanedNodesCleaner" class="com.saic.uicds.xmpp.apps.OrphanedNodesCleaner">
+        <bean id="orphanedNodesCleaner" class="com.leidos.xchangecore.core.infrastructure.xmpp.apps.OrphanedNodesCleaner">
         <property name="coreConnection" ref="coreConnection" />
         <property name="interestGroupManager" ref="interestGroupManager" />
         </bean>
