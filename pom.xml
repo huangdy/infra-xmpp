@@ -18,11 +18,6 @@
 
         <dependency>
             <groupId>com.leidos.xchangecore.core</groupId>
-            <artifactId>infra-messages</artifactId>
-            <version>${infra-messages.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.leidos.xchangecore.core</groupId>
             <artifactId>infra-services</artifactId>
             <version>${infra-services.version}</version>
         </dependency>
