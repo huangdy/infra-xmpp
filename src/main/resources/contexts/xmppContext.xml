@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-1.0.xsd">
 
-    <import resource="./xmppBeans.xml" />
+    <import resource="xmppBeans.xml" />
 
     <!-- MESSAGE CHANNELS Service Activators -->
     <!-- The message channels are defined in applicationContext.xml -->
