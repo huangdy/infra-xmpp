@@ -12,8 +12,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Core2CoreMessageIQExtension;
 
-public class Core2CoreMessageIQProvider
-    implements IQProvider {
+public class Core2CoreMessageIQProvider implements IQProvider {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -88,8 +87,8 @@ public class Core2CoreMessageIQProvider
                         inItem = false;
 
                         // Add a new item
-                        System.out.println("Core2CoreMessageIQProvider starting add item: " +
-                                           itemBuffer.toString());
+                        System.out.println("Core2CoreMessageIQProvider starting add item: "
+                                + itemBuffer.toString());
                         core2CoreMessageIQ.addItem(itemBuffer.toString());
                         itemBuffer.setLength(0);
                     }
@@ -104,8 +103,8 @@ public class Core2CoreMessageIQProvider
 
                     sb.append(StringUtils.escapeForXML(xpp.getText()));
                     if (inItem) {
-                        System.out.println("Core2CoreMessageIQProvider adding text to item: " +
-                                           xpp.getText());
+                        System.out.println("Core2CoreMessageIQProvider adding text to item: "
+                                + xpp.getText());
                         itemBuffer.append(StringUtils.escapeForXML(xpp.getText()));
                     }
                 }

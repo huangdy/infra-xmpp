@@ -50,8 +50,10 @@ public interface NodeManager {
      * This is for subscribing to local XMPP server nodes. It will reuse subscriptions if they are
      * already in place.
      * 
-     * @param node node to subscript to
-     * @param listener listener to receive updates on
+     * @param node
+     *            node to subscript to
+     * @param listener
+     *            listener to receive updates on
      * @return list of items that are currently on the node
      */
     public List<String> subscribeToNode(String node, PacketListener listener) throws XMPPException;
@@ -82,7 +84,8 @@ public interface NodeManager {
      * Unsubscribe from all nodes that the JID for the connection is subscribed to for the given
      * interest group UUID.
      * 
-     * @param uuid UUID of the interest group to unsubscribe from
+     * @param uuid
+     *            UUID of the interest group to unsubscribe from
      */
     public void unsubscribeAll(String uuid);
 
@@ -137,7 +140,7 @@ public interface NodeManager {
      * @throws IllegalArgumentException
      */
     public String retrieveNodeItem(String node, String itemID) throws IllegalStateException,
-        IllegalArgumentException;
+            IllegalArgumentException;
 
     // TODO: fix concurrency problem with using this call and creating Interest groups
     /**
@@ -152,10 +155,14 @@ public interface NodeManager {
     /**
      * Add a node to a collection node.
      * 
-     * @param folder parent node
-     * @param topic name of node
-     * @param type leaf or collection
-     * @param topicType schema of data on the node
+     * @param folder
+     *            parent node
+     * @param topic
+     *            name of node
+     * @param type
+     *            leaf or collection
+     * @param topicType
+     *            schema of data on the node
      * @return true if node was created
      */
     public boolean addNode(String folder, String topic, NODE_ITEM_TYPE type, String topicType);
@@ -163,8 +170,10 @@ public interface NodeManager {
     /**
      * Remove a node from a collection node
      * 
-     * @param folder collection node
-     * @param topic name of node
+     * @param folder
+     *            collection node
+     * @param topic
+     *            name of node
      * @return true if node was removed
      */
     public boolean removeNode(String folder, String topic);

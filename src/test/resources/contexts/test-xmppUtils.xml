@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans 
-    xmlns="http://www.springframework.org/schema/beans" 
-    xmlns:util="http://www.springframework.org/schema/util"
-    xmlns:aop="http://www.springframework.org/schema/aop" 
-    xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:tx="http://www.springframework.org/schema/tx" 
-    xmlns:security="http://www.springframework.org/schema/security"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:integration="http://www.springframework.org/schema/integration"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:integration="http://www.springframework.org/schema/integration"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.2.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2..xsd
@@ -18,7 +13,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
 
     <context:annotation-config />
 
-    <bean id="coreConnection" class="com.saic.dctd.uicds.xmpp.communications.CoreConnectionImpl"> 
+    <bean id="coreConnection" class="com.saic.dctd.uicds.xmpp.communications.CoreConnectionImpl">
         <property name="server">
             <value>hauar-m4300</value>
         </property>
@@ -46,7 +41,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
         <property name="incidentRoot">
             <value>/incident</value>
         </property>
-                <property name="debug">
+        <property name="debug">
             <value>true</value>
         </property>
         <property name="rosterProperties">
@@ -56,18 +51,18 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
             </props>
         </property>
     </bean>
-    
+
     <bean id="coreXMPPUtilsTest" class="com.saic.dctd.uicds.xmpp.communications.CoreXMPPUtilsTest">
-        <property name="coreConnection" ref="coreConnection"/>
+        <property name="coreConnection" ref="coreConnection" />
     </bean>
-    
-        <bean id="coreXMPPUtils" class="com.saic.dctd.uicds.xmpp.apps.CoreXMPPUtils">
-        <property name="coreConnection" ref="coreConnection"/>
-        <property name="interestManager" ref="interestManager"/>
+
+    <bean id="coreXMPPUtils" class="com.saic.dctd.uicds.xmpp.apps.CoreXMPPUtils">
+        <property name="coreConnection" ref="coreConnection" />
+        <property name="interestManager" ref="interestManager" />
     </bean>
-    
+
     <bean id="interestManager" class="com.saic.dctd.uicds.xmpp.communications.InterestManager">
-        <property name="coreConnection" ref="coreConnection"/>
+        <property name="coreConnection" ref="coreConnection" />
     </bean>
-    
+
 </beans>

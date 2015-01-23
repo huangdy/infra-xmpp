@@ -18,13 +18,15 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Arbitrary
 public class InterestGrptManagementIQFactory {
 
     public static final String elementName = "interestgroupmgmt";
-    public static final String namespace = "http://uicds.saic.com/xmpp/extensions/interestgroupmgmt";
+    public static final String namespace = "http://infrastructure.xchangecore.leidos.com/xmpp/extensions/interestgroupmgmt";
 
     /**
      * Joining core should respond with this to acknowledge it received the join request
      * 
-     * @param to InterestManager and joining core
-     * @param id packet id of join request IQ
+     * @param to
+     *            InterestManager and joining core
+     * @param id
+     *            packet id of join request IQ
      * @return IQ message to send
      */
     public static IQ acknowledgeJoinMessage(String to, String id) {
@@ -40,9 +42,12 @@ public class InterestGrptManagementIQFactory {
     /**
      * Result IQ if core requested to join is already joined`
      * 
-     * @param to InterestManager and joining core
-     * @param id packet id of join request IQ
-     * @param originalJoin contents of original join message
+     * @param to
+     *            InterestManager and joining core
+     * @param id
+     *            packet id of join request IQ
+     * @param originalJoin
+     *            contents of original join message
      * @return IQ message to send
      */
     public static IQ alreadyJoinedMessage(String to, String id, String originalJoin) {
@@ -55,7 +60,7 @@ public class InterestGrptManagementIQFactory {
 
         // Add in a status message
         sb.append(originalJoin.replace("</interestgroupmgmt>",
-                                       "<status>already-joined</status></interestgroupmgmt>"));
+                "<status>already-joined</status></interestgroupmgmt>"));
 
         iq.setChildElementXML(sb.toString());
 
@@ -65,9 +70,12 @@ public class InterestGrptManagementIQFactory {
     /**
      * Result IQ if core requested to join is the owner
      * 
-     * @param to InterestManager and joining core
-     * @param id packet id of join request IQ
-     * @param originalJoin contents of original join message
+     * @param to
+     *            InterestManager and joining core
+     * @param id
+     *            packet id of join request IQ
+     * @param originalJoin
+     *            contents of original join message
      * @return IQ message to send
      */
     public static IQ alreadyOwnedError(String to, String id, String originalJoin) {
@@ -93,9 +101,12 @@ public class InterestGrptManagementIQFactory {
     /**
      * Result IQ if core has error when asked to join an interest group
      * 
-     * @param to InterestManager and joining core
-     * @param id packet id of join request IQ
-     * @param originalJoin contents of original join message
+     * @param to
+     *            InterestManager and joining core
+     * @param id
+     *            packet id of join request IQ
+     * @param originalJoin
+     *            contents of original join message
      * @return IQ message to send
      */
     public static IQ coreError(String to, String id, String originalJoin) {
@@ -146,12 +157,14 @@ public class InterestGrptManagementIQFactory {
      * send message indicating the deletion of a joined interest group . This message is sent by the
      * owning core to a joined core.
      * 
-     * @param coreJID - JID of the core that where the publication request originated
-     * @param intereset group ID - ID of the joined interest group
+     * @param coreJID
+     *            - JID of the core that where the publication request originated
+     * @param intereset
+     *            group ID - ID of the joined interest group
      * @return IQ message to send
      */
     public static IQ createDeleteJoinedInterestGroupMessage(String requestingCoreJID,
-                                                            String interestGroupID) {
+            String interestGroupID) {
 
         // System.out.println("createDeleteJoinedProductMessage: coreJID=" + coreJID + " productID="
         // + productID);
@@ -178,8 +191,10 @@ public class InterestGrptManagementIQFactory {
      * send message indicating the deletion of a joined work product . This message is sent by the
      * owning core to a joined core.
      * 
-     * @param coreJID - JID of the core that where the publication request originated
-     * @param productID - ID of the joined workProduct
+     * @param coreJID
+     *            - JID of the core that where the publication request originated
+     * @param productID
+     *            - ID of the joined workProduct
      * @return IQ message to send
      */
     public static IQ createDeleteJoinedProductMessage(String requestingCoreJID, String productID) {
@@ -209,18 +224,22 @@ public class InterestGrptManagementIQFactory {
      * Request to update a work product associated with a joined interest group. This message is
      * sent by a joined core to the owning core.
      * 
-     * @param owningCoreJID JID of the core that owns the work product
-     * @param interestGroupId identifier for the interest group
-     * @param productId identifier of the product to update
-     * @param productType type of the product to update
-     * @param coreJID JID of the core requesting the product update
-     * @param config Map of connection configuration parameters
+     * @param owningCoreJID
+     *            JID of the core that owns the work product
+     * @param interestGroupId
+     *            identifier for the interest group
+     * @param productId
+     *            identifier of the product to update
+     * @param productType
+     *            type of the product to update
+     * @param coreJID
+     *            JID of the core requesting the product update
+     * @param config
+     *            Map of connection configuration parameters
      * @return IQ message to send
      */
-    public static IQ createJoinedPublishProductRequestMessage(String owningCoreJID,
-                                                              String params,
-                                                              Map<String, String> config,
-                                                              String workProductEntry) {
+    public static IQ createJoinedPublishProductRequestMessage(String owningCoreJID, String params,
+            Map<String, String> config, String workProductEntry) {
 
         // System.out.println("createJoinMessage: coreJID=" + coreJID + " owningJID=" + owningJID);
 
@@ -253,17 +272,20 @@ public class InterestGrptManagementIQFactory {
     /**
      * Joining a Core to an interest group
      * 
-     * @param coreJID JID of the core to add to the interest group
-     * @param uuid identifier for the interest group
-     * @param name human-readable name of the interest group
-     * @param owningJID JID of the core that owns the interest group
-     * @param config Map of connection configuration parameters
+     * @param coreJID
+     *            JID of the core to add to the interest group
+     * @param uuid
+     *            identifier for the interest group
+     * @param name
+     *            human-readable name of the interest group
+     * @param owningJID
+     *            JID of the core that owns the interest group
+     * @param config
+     *            Map of connection configuration parameters
      * @return IQ message to send
      */
-    public static IQ createJoinMessage(String coreJID,
-                                       String interestGroupInfoParams,
-                                       Map<String, String> config,
-                                       String interestGroupEntry) {
+    public static IQ createJoinMessage(String coreJID, String interestGroupInfoParams,
+            Map<String, String> config, String interestGroupEntry) {
 
         // System.out.println("createJoinMessage: coreJID=" + coreJID + " owningJID=" + owningJID);
 
@@ -298,15 +320,16 @@ public class InterestGrptManagementIQFactory {
     /**
      * send status of a pending product publication request to the requestor.
      * 
-     * @param requestingCoreJID - JID of the core that where the publication request originated
-     * @param params - extra parameter identifying the user ID and the core that processed the
-     *            request
-     * @param status - status of the request
+     * @param requestingCoreJID
+     *            - JID of the core that where the publication request originated
+     * @param params
+     *            - extra parameter identifying the user ID and the core that processed the request
+     * @param status
+     *            - status of the request
      * @return IQ message to send
      */
-    public static IQ createProductPublicationStatusMessage(String requestingCoreJID,
-                                                           String params,
-                                                           String statusEntry) {
+    public static IQ createProductPublicationStatusMessage(String requestingCoreJID, String params,
+            String statusEntry) {
 
         // System.out.println("createJoinMessage: coreJID=" + coreJID + " owningJID=" + owningJID);
 
@@ -333,8 +356,10 @@ public class InterestGrptManagementIQFactory {
      * A joined core that has been requested to resign will return this message after it has fully
      * resigned itself from the interest group.
      * 
-     * @param owningJID JID of the core that owns the interest group
-     * @param uuid identifier for the interest group
+     * @param owningJID
+     *            JID of the core that owns the interest group
+     * @param uuid
+     *            identifier for the interest group
      * @return IQ message to send
      */
     public static IQ createResignConfirmMessage(String to, String id, String originalJoin) {
@@ -357,10 +382,14 @@ public class InterestGrptManagementIQFactory {
      * The owner of an interest group will send this message to a joined core to request that it
      * resign from the interest group.
      * 
-     * @param jid of the core to resign to the interest group
-     * @param uuid identifier for the interest group
-     * @param name human-readable name of the interest group
-     * @param owningJID JID of the core that owns the interest group
+     * @param jid
+     *            of the core to resign to the interest group
+     * @param uuid
+     *            identifier for the interest group
+     * @param name
+     *            human-readable name of the interest group
+     * @param owningJID
+     *            JID of the core that owns the interest group
      * @return IQ message to send
      */
     public static IQ createResignMessage(String coreJID, String uuid, String name, String owningJID) {
@@ -389,9 +418,12 @@ public class InterestGrptManagementIQFactory {
      * A joined core will send this message to the owning core to tell the owner that it is
      * resigning from the interest group.
      * 
-     * @param coreJID joined core that is resigning
-     * @param uuid identifier for the interest group
-     * @param owningJID JID of the core that owns the interest group
+     * @param coreJID
+     *            joined core that is resigning
+     * @param uuid
+     *            identifier for the interest group
+     * @param owningJID
+     *            JID of the core that owns the interest group
      * @return IQ message to send
      */
     public static IQ createResigRequestMessage(String coreJID, String uuid, String owningJID) {
@@ -419,14 +451,16 @@ public class InterestGrptManagementIQFactory {
      * send message indicating a new work product type has been assoicated with a joined interest
      * group. This message is sent by the owning core.
      * 
-     * @param coreJID - JID of the core that where the publication request originated
-     * @param interestGroupID - ID of the joined interest group
-     * @param productType - the associated workProduct Type
+     * @param coreJID
+     *            - JID of the core that where the publication request originated
+     * @param interestGroupID
+     *            - ID of the joined interest group
+     * @param productType
+     *            - the associated workProduct Type
      * @return IQ message to send
      */
-    public static IQ createUpdateJoinMessage(String requestingCoreJID,
-                                             String interestGroupID,
-                                             String productType) {
+    public static IQ createUpdateJoinMessage(String requestingCoreJID, String interestGroupID,
+            String productType) {
 
         // System.out.println("createUpdateJoinMessage: coreJID=" + coreJID + " interestGroupID="
         // + interestGroupID + " wpType=" + productType);

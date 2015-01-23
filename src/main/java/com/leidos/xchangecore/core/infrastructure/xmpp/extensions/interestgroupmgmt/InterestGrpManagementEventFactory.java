@@ -16,15 +16,19 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Arbitrary
 public class InterestGrpManagementEventFactory {
 
     public static final String ELEMENT_NAME = "interestgroupmgmt";
-    public static final String NAMESPACE = "http://uicds.saic.com/xmpp/extensions/interestgroupmgmt#event";
+    public static final String NAMESPACE = "http://infrastructure.xchangecore.leidos.com/xmpp/extensions/interestgroupmgmt#event";
 
     /**
      * Joining a Core to an Interest Group
      * 
-     * @param coreName name of the core to add to the interest group
-     * @param uuid identifier for the interest group
-     * @param name human-readable name of the interest group
-     * @param owningJID JID of the core that owns the interest group
+     * @param coreName
+     *            name of the core to add to the interest group
+     * @param uuid
+     *            identifier for the interest group
+     * @param name
+     *            human-readable name of the interest group
+     * @param owningJID
+     *            JID of the core that owns the interest group
      * @return
      */
     public static Message sendUpdateToOwner(String coreName, String uuid, String from,

@@ -22,15 +22,15 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.communications.util.XmppU
 import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.interestgroupmgmt.InterestGrptManagementIQFactory;
 import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.ArbitraryIQ;
 
-public class InterestGrpGMgmtIQListener
-    implements PacketListener {
+public class InterestGrpGMgmtIQListener implements PacketListener {
 
     private final Logger log = Logger.getLogger(this.getClass());
 
     private final InterestGroupManager interestGroupManager;
     private final Pattern uuidPattern = Pattern.compile("uuid=[\"']([\\w-]+?)[\"']");
     private final Pattern ownerPattern = Pattern.compile("owner=[\"'](.+?)[\"']");
-    private final Pattern interestGroupTypePattern = Pattern.compile("interestGroupType=[\"'](.+?)[\"']");
+    private final Pattern interestGroupTypePattern = Pattern
+            .compile("interestGroupType=[\"'](.+?)[\"']");
     private final Pattern corePattern = Pattern.compile("core=[\"'](.+?)[\"']");
     private final Pattern joinPattern = Pattern.compile("<join");
     private final Pattern resignPattern = Pattern.compile("<resign ");
@@ -41,16 +41,19 @@ public class InterestGrpGMgmtIQListener
     private final Pattern alreadyJoinedPattern = Pattern.compile("already-joined");
     private final Pattern joinedPublishPattern = Pattern.compile("<requestJoinedPublish");
     private final Pattern productPublicationPattern = Pattern.compile("<productPublicationStatus");
-    private final Pattern cleanupJoinedInterestGroupPattern = Pattern.compile("<cleanupJoinedInterestGroup");
-    private final Pattern deleteJoinedInterestGroupPattern = Pattern.compile("<deleteJoinedInterestGroup");
+    private final Pattern cleanupJoinedInterestGroupPattern = Pattern
+            .compile("<cleanupJoinedInterestGroup");
+    private final Pattern deleteJoinedInterestGroupPattern = Pattern
+            .compile("<deleteJoinedInterestGroup");
     private final Pattern deleteJoinedProductPattern = Pattern.compile("<deleteJoinedProduct");
     private final Pattern updateJoinPattern = Pattern.compile("<updateJoin");
-    private final Pattern productPayloadElementPattern = Pattern.compile("<ProductPayload>(.+?)</ProductPayload>",
-        Pattern.DOTALL | Pattern.MULTILINE);
-    private final Pattern publicationStatusElementPattern = Pattern.compile("<ProductPublicationStatus>(.+?)</ProductPublicationStatus>",
-        Pattern.DOTALL | Pattern.MULTILINE);
-    private final Pattern ItemElementPattern = Pattern.compile("<item>(.+?)</item>",
-        Pattern.DOTALL | Pattern.MULTILINE);
+    private final Pattern productPayloadElementPattern = Pattern.compile(
+            "<ProductPayload>(.+?)</ProductPayload>", Pattern.DOTALL | Pattern.MULTILINE);
+    private final Pattern publicationStatusElementPattern = Pattern.compile(
+            "<ProductPublicationStatus>(.+?)</ProductPublicationStatus>", Pattern.DOTALL
+                    | Pattern.MULTILINE);
+    private final Pattern ItemElementPattern = Pattern.compile("<item>(.+?)</item>", Pattern.DOTALL
+            | Pattern.MULTILINE);
 
     public InterestGrpGMgmtIQListener(InterestGroupManager instance) {
 
@@ -112,7 +115,8 @@ public class InterestGrpGMgmtIQListener
         // notify the Interest Group Management Component of the deleted interest group
         DeleteJoinedProductMessage message = new DeleteJoinedProductMessage();
         message.setProductID(productID);
-        Message<DeleteJoinedProductMessage> notification = new GenericMessage<DeleteJoinedProductMessage>(message);
+        Message<DeleteJoinedProductMessage> notification = new GenericMessage<DeleteJoinedProductMessage>(
+                message);
         interestGroupManager.getDeleteJoinedProductNotificationChannel().send(notification);
     }
 
@@ -120,9 +124,12 @@ public class InterestGrpGMgmtIQListener
      * The receiving core is requested to join the Interest group. This method should only be
      * processed by a core that does not own the Interest group referenced in the message.
      *
-     * @param from JID of owning core
-     * @param packetId XMPP packet id
-     * @param xml XML text of the message
+     * @param from
+     *            JID of owning core
+     * @param packetId
+     *            XMPP packet id
+     * @param xml
+     *            XML text of the message
      */
     private void doJoin(String from, String packetId, String xml) {
 
@@ -198,7 +205,8 @@ public class InterestGrpGMgmtIQListener
 
             // Get the owners connection properties
             // RDW - should be able to remove this at some point
-            StringBuffer xmlProps = new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">");
+            StringBuffer xmlProps = new StringBuffer(
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE properties SYSTEM \"http://java.sun.com/dtd/properties.dtd\">");
             String temp = "";
             if (xml.indexOf("<properties") != -1) {
                 temp = xml.substring(xml.indexOf("<properties"), xml.indexOf("</properties") + 13);
@@ -211,8 +219,9 @@ public class InterestGrpGMgmtIQListener
             if (xml.indexOf("<workProductTypesToShare/>") == -1) {
                 // if not an empty workProductTypes list
                 if (xml.indexOf("<workProductTypesToShare>") != -1) {
-                    String productTypes = xml.substring(xml.indexOf("<workProductTypesToShare>") + 25,
-                        xml.indexOf("</workProductTypesToShare>"));
+                    String productTypes = xml.substring(
+                            xml.indexOf("<workProductTypesToShare>") + 25,
+                            xml.indexOf("</workProductTypesToShare>"));
                     // log.info("InterestGroupMgmtIQListener:doJoin: workProductTypesToShare=["
                     // + productTypes + "]");
                     // TODO: add types in array
@@ -231,7 +240,8 @@ public class InterestGrpGMgmtIQListener
 
             String interestGroupInfo = "";
             if (xml.indexOf("<info>") != -1) {
-                interestGroupInfo = xml.substring(xml.indexOf("<info>") + 6, xml.indexOf("</info>"));
+                interestGroupInfo = xml
+                        .substring(xml.indexOf("<info>") + 6, xml.indexOf("</info>"));
             }
 
             try {
@@ -241,13 +251,12 @@ public class InterestGrpGMgmtIQListener
                 interestGroup.interestGroupType = interestGroupType;
                 interestGroup.interestGroupOwner = owner;
                 interestGroup.workProductTypes = workProductTypesToShare;
-                interestGroup.interestGroupPubsubService = XmppUtils.getPubsubServiceFromJID("pubsub",
-                    owner);
+                interestGroup.interestGroupPubsubService = XmppUtils.getPubsubServiceFromJID(
+                        "pubsub", owner);
 
                 log.debug("doJoin:  interestGroupID=" + interestGroup.interestGroupID);
-                if (!interestGroupManager.joinInterestGroup(interestGroup,
-                    xmlProps.toString(),
-                    interestGroupInfo)) {
+                if (!interestGroupManager.joinInterestGroup(interestGroup, xmlProps.toString(),
+                        interestGroupInfo)) {
                     log.debug(" IncdMgmtIQListener:doJoin: error joining interest group");
                     IQ msg = InterestGrptManagementIQFactory.coreError(from, packetId, xml);
                     log.debug(msg.toXML());
@@ -280,9 +289,12 @@ public class InterestGrpGMgmtIQListener
      * group has received the join request. Only cores that own an Interest group should get to this
      * method.
      *
-     * @param from JID of core that is acknowledging the join request
-     * @param packetId - XMPP packet id from the original join request
-     * @param xml XML text of the message
+     * @param from
+     *            JID of core that is acknowledging the join request
+     * @param packetId
+     *            - XMPP packet id from the original join request
+     * @param xml
+     *            XML text of the message
      */
     private void doJoinAcknowledge(String from, String packetId, String xml) {
 
@@ -295,7 +307,8 @@ public class InterestGrpGMgmtIQListener
             if (interestGroupManager.isCoreJoining(coreName, interestGroupID)) {
                 // TODO: may want to set a timer to reset this flag
                 if (interestGroupManager.isInterestGroupOwned(interestGroupID)) {
-                    InterestGroup interestGroup = interestGroupManager.getOwnedInterestGroup(interestGroupID);
+                    InterestGroup interestGroup = interestGroupManager
+                            .getOwnedInterestGroup(interestGroupID);
                     if (interestGroup != null) {
                         interestGroup.suspendUpdateProcessing(interestGroupID);
                     } else {
@@ -314,9 +327,12 @@ public class InterestGrpGMgmtIQListener
      * The receiving core receives a request from a joined core to either publish a new work product
      * or update an existing work product that is associated with a shared interest group.
      *
-     * @param from JID of owning core
-     * @param packetId XMPP packet id
-     * @param xml XML text of the message
+     * @param from
+     *            JID of owning core
+     * @param packetId
+     *            XMPP packet id
+     * @param xml
+     *            XML text of the message
      */
     private void doJoinedPublishRequest(String from, String packetId, String xml) {
 
@@ -412,7 +428,8 @@ public class InterestGrpGMgmtIQListener
         msg.setWorkProduct(workProductString);
         msg.setAct(act);
         msg.setUserID(userID);
-        Message<JoinedPublishProductRequestMessage> message = new GenericMessage<JoinedPublishProductRequestMessage>(msg);
+        Message<JoinedPublishProductRequestMessage> message = new GenericMessage<JoinedPublishProductRequestMessage>(
+                msg);
         log.debug("===> doJoinedPublishRequest: sending JoinedPublishProductRequestMessage");
         interestGroupManager.getJoinedPublishProductNotificationChannel().send(message);
 
@@ -423,8 +440,10 @@ public class InterestGrpGMgmtIQListener
      * has retrieved the current state of the Interest group and is ready to receive updates. Only
      * cores that own an Interest group should get to this method.
      *
-     * @param from JID of core that has joined and is ready
-     * @param xml XML text of the message
+     * @param from
+     *            JID of core that has joined and is ready
+     * @param xml
+     *            XML text of the message
      */
     private void doJoinReady(String from, String xml) {
 
@@ -436,7 +455,8 @@ public class InterestGrpGMgmtIQListener
             if (interestGroupManager.isInterestGroupOwned(interestGroupID)) {
                 // TODO: make sure that all cores in the process of joining are done
                 // before procesing and reset
-                InterestGroup interestGroup = interestGroupManager.getOwnedInterestGroup(interestGroupID);
+                InterestGroup interestGroup = interestGroupManager
+                        .getOwnedInterestGroup(interestGroupID);
                 synchronized (interestGroupManager.getProcessSuspendedUpdatesLock()) {
                     if (interestGroup != null) {
                         interestGroup.processSuspendedUpdates();
@@ -485,7 +505,8 @@ public class InterestGrpGMgmtIQListener
         msg.setUserID(userID);
         msg.setOwningCore(from);
         msg.setStatus(statusString);
-        Message<ProductPublicationStatusNotificationMessage> message = new GenericMessage<ProductPublicationStatusNotificationMessage>(msg);
+        Message<ProductPublicationStatusNotificationMessage> message = new GenericMessage<ProductPublicationStatusNotificationMessage>(
+                msg);
         log.debug("===> doJoinedPublishRequest: sending JoinedPublishProductRequestMessage");
         interestGroupManager.getProductPublicationStatusNotificationChannel().send(message);
     }
@@ -493,8 +514,10 @@ public class InterestGrpGMgmtIQListener
     /**
      * The receiving core is a joined core and is being asked to resign from the interest group.
      *
-     * @param from JID of the core that owns the interest group
-     * @param xml XML text of the message
+     * @param from
+     *            JID of the core that owns the interest group
+     * @param xml
+     *            XML text of the message
      */
     private void doResign(String from, String packetId, String xml) {
 
@@ -521,8 +544,10 @@ public class InterestGrpGMgmtIQListener
      * The receiving core is the owner of the interest group and is receiving a confirmation that
      * the joined core (from) has finished resigning from the interest group.
      *
-     * @param from core that has resigned
-     * @param packetId id of
+     * @param from
+     *            core that has resigned
+     * @param packetId
+     *            id of
      * @param xml
      */
     private void doResignAcknowledge(String from, String packetId, String xml) {
@@ -550,8 +575,10 @@ public class InterestGrpGMgmtIQListener
      * The receiving core is the owner and is being asked to resign a joined core from the interest
      * group.
      *
-     * @param from JID of the core that owns the interest group
-     * @param xml XML text of the message
+     * @param from
+     *            JID of the core that owns the interest group
+     * @param xml
+     *            XML text of the message
      */
     private void doResignRequest(String from, String packetId, String xml) {
 
@@ -574,7 +601,7 @@ public class InterestGrpGMgmtIQListener
                         // coreName, interestGroupID);
                     } else {
                         interestGroupManager.getInterestManager().sendResignMessage(coreJID,
-                            interestGroupID);
+                                interestGroupID);
                     }
                 } catch (IllegalArgumentException e) {
                     log.error("doResign exception: " + e.getMessage());
@@ -638,15 +665,16 @@ public class InterestGrpGMgmtIQListener
         // state and remove from joiningCores list
         if (interestGroupManager.isInterestGroupOwned(interestGroupID)) {
             interestGroupManager.removeJoiningCoreFromInterestGroup(interestGroupID, coreName);
-            InterestGroup interestGroup = interestGroupManager.getOwnedInterestGroup(interestGroupID);
+            InterestGroup interestGroup = interestGroupManager
+                    .getOwnedInterestGroup(interestGroupID);
             if (interestGroup != null) {
                 interestGroup.interestGroupOwner = coreName;
                 interestGroup.state = CORE_STATUS.ERROR;
-                log.error("ERROR from IncdMgmtIQListener interest group is owned by this core " +
-                          iq.toXML());
+                log.error("ERROR from IncdMgmtIQListener interest group is owned by this core "
+                        + iq.toXML());
             } else {
-                log.error("ERROR from IncdMgmtIQListener target interest group was lost " +
-                          iq.toXML());
+                log.error("ERROR from IncdMgmtIQListener target interest group was lost "
+                        + iq.toXML());
             }
         }
 
@@ -683,7 +711,7 @@ public class InterestGrpGMgmtIQListener
 
     /*
      * This particular processPacket handles the interestGroup management IQ packets. (non-Javadoc)
-     *
+     * 
      * @see
      * org.jivesoftware.smack.PacketListener#processPacket(org.jivesoftware.smack.packet.Packet)
      */

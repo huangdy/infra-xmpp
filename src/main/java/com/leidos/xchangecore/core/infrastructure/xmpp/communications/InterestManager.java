@@ -21,8 +21,10 @@ public interface InterestManager {
     /**
      * Add a folder to a folder.
      * 
-     * @param folder folder to create the new folder in
-     * @param name name of new folder
+     * @param folder
+     *            folder to create the new folder in
+     * @param name
+     *            name of new folder
      * @return fully qualified name of the folder that can be used for another call to addFolder
      */
     public String addFolder(String pubsubService, String folder, String name);
@@ -31,11 +33,8 @@ public interface InterestManager {
 
     public void addMessageListener(PacketListener listener, PacketFilter filter);
 
-    public boolean addNode(String pubsubService,
-                           String folder,
-                           String topic,
-                           NODE_ITEM_TYPE type,
-                           String topicType);
+    public boolean addNode(String pubsubService, String folder, String topic, NODE_ITEM_TYPE type,
+            String topicType);
 
     public void addNodeManager(String pubsubService);
 
@@ -43,7 +42,7 @@ public interface InterestManager {
     public void cleanup();
 
     public ArrayList<String> getAllNodeItems(String pubsubService, String node)
-        throws IllegalArgumentException;
+            throws IllegalArgumentException;
 
     public XmppConnection getCoreConnection();
 
@@ -52,8 +51,8 @@ public interface InterestManager {
     public NodeManager getNodeManager(String pubsubService);
 
     // RDW remove
-    //	public  List<String> subscribeToOwnersNode(String node,
-    //			Properties ownerConnectionProps) throws Exception;
+    // public List<String> subscribeToOwnersNode(String node,
+    // Properties ownerConnectionProps) throws Exception;
 
     public MessageChannel getOwningCoreWorkProductNotificationChannel();
 
@@ -66,7 +65,8 @@ public interface InterestManager {
      * Method to initialize this object. After calling this isInitialized will return true and this
      * object can be used.
      * 
-     * @param con the CoreConnection to the XMPP server
+     * @param con
+     *            the CoreConnection to the XMPP server
      */
     @PostConstruct
     public void initialize();
@@ -87,7 +87,7 @@ public interface InterestManager {
     public boolean removeNode(String pubsubService, String folder, String topic);
 
     public String retrieveNodeItem(String pubsubService, String node, String wpID)
-        throws IllegalStateException, IllegalArgumentException;
+            throws IllegalStateException, IllegalArgumentException;
 
     public void sendCleanupJoinedInterestGroupMessage(String remoteJID, String interestGroupID);
 
@@ -95,22 +95,14 @@ public interface InterestManager {
 
     public void sendDeleteJoinedProductMessage(String coreJID, String productID);
 
-    public void sendJoinedPublishProductRequestMessage(String interestGroupId,
-                                                       String owningCore,
-                                                       String productId,
-                                                       String productType,
-                                                       String act,
-                                                       String userID,
-                                                       String product);
+    public void sendJoinedPublishProductRequestMessage(String interestGroupId, String owningCore,
+            String productId, String productType, String act, String userID, String product);
 
-    public void sendJoinMessage(String coreJID,
-                                InterestGroup interestGroup,
-                                String interestGroupInfo,
-                                List<String> workProductTypesToShare);
+    public void sendJoinMessage(String coreJID, InterestGroup interestGroup,
+            String interestGroupInfo, List<String> workProductTypesToShare);
 
-    public void sendProductPublicationStatusMessage(String requestingCore,
-                                                    String userID,
-                                                    String status);
+    public void sendProductPublicationStatusMessage(String requestingCore, String userID,
+            String status);
 
     public void sendResignMessage(String coreJID);
 
@@ -126,7 +118,8 @@ public interface InterestManager {
 
     public void setNodeManager(NodeManager nodeManager);
 
-    public void setOwningCoreWorkProductNotificationChannel(MessageChannel owningCoreWorkProductNotificationChannel);
+    public void setOwningCoreWorkProductNotificationChannel(
+            MessageChannel owningCoreWorkProductNotificationChannel);
 
     public List<String> subscribeToNode(String pubsubService, String node) throws XMPPException;
 
@@ -140,7 +133,8 @@ public interface InterestManager {
      * Unsubscribe from all nodes that the JID for the connection is subscribed to for the given
      * interest group UUID.
      * 
-     * @param uuid UUID of the interest group to unsubscribe from
+     * @param uuid
+     *            UUID of the interest group to unsubscribe from
      */
     public void unsubscribeAllForInterestGroup(String pubsubService, String uuid);
 

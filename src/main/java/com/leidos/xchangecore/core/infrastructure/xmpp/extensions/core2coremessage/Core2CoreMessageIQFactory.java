@@ -7,12 +7,10 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Arbitrary
 public class Core2CoreMessageIQFactory {
 
     public static final String elementName = "core2coremessage";
-    public static final String namespace = "http://uicds.saic.com/xmpp/extensions/core2coremessage";
+    public static final String namespace = "http://infrastructure.xchangecore.leidos.com/xmpp/extensions/core2coremessage";
 
-    public static IQ createCore2CoreMessage(String message,
-                                            String msgType,
-                                            String toCoreJID,
-                                            String toCoreJIDWirhResource) {
+    public static IQ createCore2CoreMessage(String message, String msgType, String toCoreJID,
+            String toCoreJIDWirhResource) {
 
         StringBuffer sb = new StringBuffer();
         ArbitraryIQ iq = new ArbitraryIQ();

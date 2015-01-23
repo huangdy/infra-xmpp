@@ -36,7 +36,7 @@ http://www.springframework.org/schema/integration http://www.springframework.org
     <bean id="agreementDAO" class="com.leidos.xchangecore.core.infrastructure.dao.hb.AgreementDAOHibernate" />
 
     <!-- Communications Service XMPP beans -->
-    
+
     <bean id="coreConnection" parent="baseCoreConnection">
         <property name="coreStatusUpdateChannel" ref="coreStatusUpdateChannel" />
         <property name="agreementDAO" ref="agreementDAO" />
@@ -46,14 +46,16 @@ http://www.springframework.org/schema/integration http://www.springframework.org
         <property name="coreConnection" ref="coreConnection" />
         <property name="owningCoreWorkProductNotificationChannel" ref="owningCoreWorkProductNotificationChannel" />
     </bean>
-    
-    <bean id="core2CoreMessageProcessor" class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.Core2CoreMessageProcessor">
+
+    <bean id="core2CoreMessageProcessor"
+        class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.Core2CoreMessageProcessor">
         <property name="coreConnection" ref="coreConnection" />
         <property name="core2CoreMessageNotificationChannel" ref="core2CoreMessageNotificationChannel" />
         <property name="deleteInterestGroupSharedFromRemoteCoreChannel" ref="deleteInterestGroupSharedFromRemoteCoreChannel" />
     </bean>
 
-    <bean id="interestGroupManager" class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestGroupManager">
+    <bean id="interestGroupManager"
+        class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestGroupManager">
         <property name="joinedInterestGroupNotificationChannel" ref="joinedInterestGroupNotificationChannel" />
         <property name="joinedPublishProductNotificationChannel" ref="joinedPublishProductNotificationChannel" />
         <property name="productPublicationStatusNotificationChannel" ref="productPublicationStatusNotificationChannel" />
@@ -68,7 +70,8 @@ http://www.springframework.org/schema/integration http://www.springframework.org
         </property>
     </bean>
 
-    <bean id="communicationsServiceXmpp" class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommunicationsServiceXmppImpl">
+    <bean id="communicationsServiceXmpp"
+        class="com.leidos.xchangecore.core.infrastructure.xmpp.communications.CommunicationsServiceXmppImpl">
         <property name="coreRosterChannel" ref="coreRosterChannel" />
         <property name="core2CoreMessageProcessor" ref="core2CoreMessageProcessor" />
         <property name="interestGroupManager" ref="interestGroupManager" />

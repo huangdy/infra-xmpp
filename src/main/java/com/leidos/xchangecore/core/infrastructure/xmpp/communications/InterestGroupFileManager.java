@@ -32,8 +32,8 @@ public class InterestGroupFileManager {
                     public void run() {
 
                         IncomingFileTransfer transfer = request.accept();
-                        logger.info("InterestGroupFileManager accepting file " +
-                                    request.getDescription());
+                        logger.info("InterestGroupFileManager accepting file "
+                                + request.getDescription());
 
                         try {
                             URI uri = new URI(request.getDescription());
@@ -43,8 +43,8 @@ public class InterestGroupFileManager {
                             File dir = file.getParentFile();
                             if (dir != null && !dir.exists()) {
                                 if (!dir.mkdirs()) {
-                                    logger.error("FileTransferManager cannot create directory " +
-                                                 dir.getName());
+                                    logger.error("FileTransferManager cannot create directory "
+                                            + dir.getName());
                                 }
                             }
 
@@ -52,13 +52,13 @@ public class InterestGroupFileManager {
                             try {
                                 transfer.recieveFile(file);
                             } catch (XMPPException e) {
-                                logger.error("InterestGroupFileManager error transfering file " +
-                                             request.getFileName() + " : " + e.getMessage());
+                                logger.error("InterestGroupFileManager error transfering file "
+                                        + request.getFileName() + " : " + e.getMessage());
                                 return;
                             }
                         } catch (URISyntaxException e) {
-                            logger.error("InterestGroupFileManager:fileTransferRequest error constructing URI from " +
-                                         request.getDescription() + " : " + e.getMessage());
+                            logger.error("InterestGroupFileManager:fileTransferRequest error constructing URI from "
+                                    + request.getDescription() + " : " + e.getMessage());
                         }
                     }
                 }).start();
@@ -80,19 +80,19 @@ public class InterestGroupFileManager {
                 try {
                     outgoing.sendFile(file, fileName);
                 } catch (XMPPException e) {
-                    logger.error("InterestGroupFileManager:transferFileToCore error " +
-                                 e.getMessage());
+                    logger.error("InterestGroupFileManager:transferFileToCore error "
+                            + e.getMessage());
                 } catch (IllegalArgumentException e) {
-                    logger.error("InterestGroupFileManager:transferFileToCore error " +
-                                 e.getMessage());
+                    logger.error("InterestGroupFileManager:transferFileToCore error "
+                            + e.getMessage());
                 }
             } else {
-                logger.error("InterestGroupFileManager:transferFileToCore file " + fileName +
-                             " does not exist.");
+                logger.error("InterestGroupFileManager:transferFileToCore file " + fileName
+                        + " does not exist.");
             }
         } catch (URISyntaxException e) {
-            logger.error("InterestGroupFileManager:transferFileToCore error constructing URI from " +
-                         fileName + " : " + e.getMessage());
+            logger.error("InterestGroupFileManager:transferFileToCore error constructing URI from "
+                    + fileName + " : " + e.getMessage());
         }
     }
 }

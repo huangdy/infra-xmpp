@@ -23,8 +23,7 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.PubSubIQ;
  * 
  * @author summersw
  */
-public class PubSubIQProvider
-    implements IQProvider {
+public class PubSubIQProvider implements IQProvider {
 
     public PubSubIQProvider() {
 
@@ -80,7 +79,7 @@ public class PubSubIQProvider
                         String jid = xpp.getAttributeValue(null, "jid");
                         if (jid != null) {
                             pubsubIQ.addSubscription(jid,
-                                new PubSubIQ.Subscription(sub, subid, jid));
+                                    new PubSubIQ.Subscription(sub, subid, jid));
                         }
                     }
 

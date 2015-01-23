@@ -2,9 +2,7 @@ package com.leidos.xchangecore.core.infrastructure.xmpp.communications.ping;
 
 import org.jivesoftware.smack.packet.IQ;
 
-public class Ping
-    extends IQ
-    implements PingConstants {
+public class Ping extends IQ implements PingConstants {
 
     public Ping() {
 
@@ -17,13 +15,10 @@ public class Ping
         */
         setFrom(from + ResourceName);
         setTo(to + ResourceName);
-        /* 
-         * server to server
-        from = from.replaceAll("uicds@", "");
-        to = to.replaceAll("uicds@", "");
-        setTo(to);
-        setFrom(from);
-          */
+        /*
+         * server to server from = from.replaceAll("uicds@", ""); to = to.replaceAll("uicds@", "");
+         * setTo(to); setFrom(from);
+         */
         setType(IQ.Type.GET);
         setPacketID(getPacketID());
     }

@@ -7,22 +7,22 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Arbitrary
 
 public class NotificationExtensionFactory {
 
-	public static final String ELEMENT_NAME = "notification";
-    public static final String NAMESPACE = "http://uicds.saic.com/xmpp/extensions/notification#event";
+    public static final String ELEMENT_NAME = "notification";
+    public static final String NAMESPACE = "http://infrastructure.xchangecore.leidos.com/xmpp/extensions/notification#event";
 
-    public static Message createNotificationMessage(String to, 
-            String body, String xhtml, String notification) {
+    public static Message createNotificationMessage(String to, String body, String xhtml,
+            String notification) {
 
         StringBuffer sb = new StringBuffer();
         ArbitraryPacketExtension ext = new ArbitraryPacketExtension(ELEMENT_NAME, NAMESPACE);
         Message msg = new Message();
         msg.setTo(to);
         msg.setBody(body);
-        
+
         if (xhtml != null) {
-        	XHTMLExtension xext = new XHTMLExtension();
-        	xext.addBody(xhtml);
-        	msg.addExtension(xext);
+            XHTMLExtension xext = new XHTMLExtension();
+            xext.addBody(xhtml);
+            msg.addExtension(xext);
         }
 
         sb.append("<" + ELEMENT_NAME + " xmlns='" + NAMESPACE + "'>");

@@ -44,7 +44,7 @@ public class InterestGrpMgmtIQProvider implements IQProvider {
         try {
             int eventType = xpp.getEventType();
 
-            //logger.info("ParseIQ: eventType=" + eventType);
+            // logger.info("ParseIQ: eventType=" + eventType);
 
             while (!done) {
 

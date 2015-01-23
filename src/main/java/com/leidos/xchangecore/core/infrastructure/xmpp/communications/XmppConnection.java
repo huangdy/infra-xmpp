@@ -30,12 +30,11 @@ public interface XmppConnection {
     public void sendPacket(Packet packet);
 
     /**
-     * Create a CommandWithReply instances to handle sending the XMPP 
-     * packet and wait for a reply.
+     * Create a CommandWithReply instances to handle sending the XMPP packet and wait for a reply.
      * 
      * @param packet
      * @return
-     * @throws XMPPException 
+     * @throws XMPPException
      */
     public CommandWithReply createCommandWithReply(Packet packet) throws XMPPException;
 
@@ -55,8 +54,8 @@ public interface XmppConnection {
     public void removePacketListener(PacketListener listener);
 
     /**
-     * Create a packet collector to collect packets returned from 
-     * the server based on the input filter.
+     * Create a packet collector to collect packets returned from the server based on the input
+     * filter.
      * 
      * @param packetFilter
      * @return
@@ -66,15 +65,18 @@ public interface XmppConnection {
     /**
      * Add a new entry for a core to the XMPP roster.
      * 
-     * @param coreJID Core's XMPP JID
-     * @param name human readable name for the coreServerName
+     * @param coreJID
+     *            Core's XMPP JID
+     * @param name
+     *            human readable name for the coreServerName
      */
     public void addRosterEntry(String coreJID, String name);
 
     /**
      * Delete an entry from the roster.
      * 
-     * @param coreJID JID of roster entry to remove
+     * @param coreJID
+     *            JID of roster entry to remove
      */
     public void deleteRosterEntry(String coreJID);
 
@@ -87,12 +89,14 @@ public interface XmppConnection {
 
     /**
      * Get the JID of the pubsub service for this connection.
+     * 
      * @return
      */
     public String getPubSubSvc();
 
     /**
      * Set the JID of this connections pubsub service.
+     * 
      * @param value
      */
     public void setPubSubSvc(String value);
@@ -100,7 +104,8 @@ public interface XmppConnection {
     /**
      * Get a list of items on a node.
      * 
-     * @param node name of node
+     * @param node
+     *            name of node
      * @return
      */
     public DiscoverItems discoverNodeItems(String node);
@@ -108,7 +113,8 @@ public interface XmppConnection {
     /**
      * Get the XMPP information on a node.
      * 
-     * @param node name of node
+     * @param node
+     *            name of node
      * @return
      */
     public DiscoverInfo discoverNodeInfo(String node);

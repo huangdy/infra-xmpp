@@ -95,7 +95,7 @@ http://www.springframework.org/schema/security http://www.springframework.org/sc
 
     <context:annotation-config />
 
-     
+
     <!-- MESSAGE CHANNELS -->
 
     <bean id="xmppMessageReceiver"

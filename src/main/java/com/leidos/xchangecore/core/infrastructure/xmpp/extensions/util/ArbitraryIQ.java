@@ -12,8 +12,7 @@ import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.XMPPError;
 import org.xml.sax.SAXException;
 
-public class ArbitraryIQ
-    extends IQ {
+public class ArbitraryIQ extends IQ {
 
     private String xml = "<null />";
 
@@ -57,8 +56,8 @@ public class ArbitraryIQ
     public static IQ createResultError(IQ iq, XMPPError error) {
 
         if (!(iq.getType() == Type.GET || iq.getType() == Type.SET)) {
-            throw new IllegalArgumentException("IQ must be of type 'set' or 'get'. Original IQ: " +
-                iq.toXML());
+            throw new IllegalArgumentException("IQ must be of type 'set' or 'get'. Original IQ: "
+                    + iq.toXML());
         }
         IQ result = new IQ() {
             public String getChildElementXML() {

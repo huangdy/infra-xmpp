@@ -33,14 +33,16 @@ public abstract class IepdListener {
      * directly from a client for any service specific logic but should wait until they receive the
      * IepdChanged callback.
      * 
-     * @param update XML text for an update to the current topic
+     * @param update
+     *            XML text for an update to the current topic
      */
     public abstract void IepdChanged(String update);
 
     /**
      * This method will be called when an item is deleted from a topic.
      * 
-     * @param uuid Unique id of the item that was deleted.
+     * @param uuid
+     *            Unique id of the item that was deleted.
      */
     public abstract void deleteItem(String uuid);
 }

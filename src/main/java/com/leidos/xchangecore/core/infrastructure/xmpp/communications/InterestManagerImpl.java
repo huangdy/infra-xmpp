@@ -38,10 +38,10 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.PubSubEve
  *
  * <pre>
  * InterestManagement interestManager = new InterestMangement();
- *
+ * 
  * // establish connection to server and login
  * interestManager.connect(&quot;username&quot;, &quot;password&quot;);
- *
+ * 
  * // get the list of current interest groups
  *
  * </pre>
@@ -137,7 +137,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#addCollection
      * (java.lang.String)
@@ -154,7 +154,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#addFolder(
      * java.lang.String, java.lang.String)
@@ -171,7 +171,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#addIQListener
      * (org.jivesoftware.smack.PacketListener, org.jivesoftware.smack.filter.PacketFilter)
@@ -187,7 +187,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#addMessageListener
      * (org.jivesoftware.smack.PacketListener, org.jivesoftware.smack.filter.PacketFilter)
@@ -203,7 +203,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#addNode(java
      * .lang.String, java.lang.String,
@@ -234,7 +234,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#cleanup()
      */
     @Override
@@ -245,7 +245,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#getAllNodeItems
      * (java.lang.String)
@@ -263,7 +263,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#getCoreConnection
      * ()
@@ -276,7 +276,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#getFolderContents
      * (java.lang.String)
@@ -293,7 +293,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#getNodeManager
      * (java.lang.String)
@@ -312,7 +312,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#
      * getOwningCoreWorkProductNotificationChannel()
      */
@@ -324,7 +324,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#getOwnJid()
      */
@@ -336,7 +336,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#initialize()
      */
@@ -374,7 +374,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#publishToNode
      * (java.lang.String, java.lang.String)
@@ -391,7 +391,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#
      * refreshSubscriptions()
      */
@@ -407,7 +407,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#removeItem
      * (java.lang.String, java.lang.String)
@@ -432,7 +432,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#removeNode
      * (java.lang.String)
@@ -450,7 +450,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#removeNode
      * (java.lang.String, java.lang.String)
@@ -468,7 +468,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#retrieveNodeItem
      * (java.lang.String, java.lang.String)
@@ -744,7 +744,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#setCoreConnection
      * (com.leidos.xchangecore.core.infrastructure.xmpp.communications.CoreConnection)
@@ -757,7 +757,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#setNodeManager
      * (com.leidos.xchangecore.core.infrastructure.xmpp.communications.NodeManager)
@@ -770,7 +770,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#
      * setOwningCoreWorkProductNotificationChannel
      * (org.springframework.integration.core.MessageChannel)
@@ -784,7 +784,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#subscribeToNode
      * (java.lang.String)
@@ -821,7 +821,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#unsubscribeAll
      * ()
@@ -838,7 +838,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#unsubscribeAll
      * (java.lang.String)
@@ -855,7 +855,7 @@ public class InterestManagerImpl implements InterestManager {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see com.leidos.xchangecore.core.infrastructure.xmpp.communications.InterestManager#
      * updateSubscriptionMap()
      */

@@ -21,8 +21,7 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.communications.CoreConnec
 public class PingManager {
 
     // private final static String Logger logger = LoggerFactor
-    private class PingPacketListener
-        implements PacketListener {
+    private class PingPacketListener implements PacketListener {
 
         private final CoreConnection coreConnection;
         private final String localJID;
@@ -36,20 +35,21 @@ public class PingManager {
         @Override
         public void processPacket(Packet packet) {
 
-            // logger.debug("processPacket: received [" + packet.getFrom() + "] -> [" + packet.getTo() + "]");
+            // logger.debug("processPacket: received [" + packet.getFrom() + "] -> [" +
+            // packet.getTo() + "]");
             if (packet.getFrom().contains(localJID)) {
-                logger.warn("processPacket: received [" + packet.getFrom() + "] -> [" +
-                            packet.getTo() + "]");
+                logger.warn("processPacket: received [" + packet.getFrom() + "] -> ["
+                        + packet.getTo() + "]");
                 return;
             }
             Pong pong = new Pong(packet);
-            // logger.debug("processPacket: send [" + pong.getFrom() + "] -> [" + pong.getTo() + "]");
+            // logger.debug("processPacket: send [" + pong.getFrom() + "] -> [" + pong.getTo() +
+            // "]");
             coreConnection.sendPacket(pong);
         }
     }
 
-    private class PingTasker
-        implements Runnable {
+    private class PingTasker implements Runnable {
 
         private final Logger logger = LoggerFactory.getLogger(PingTasker.class);
         private final String remoteJID;
@@ -59,8 +59,8 @@ public class PingManager {
 
         PingTasker(String remoteJID, int delay) {
 
-            logger.debug("create PinkTasker for " + remoteJID + " with interval: " + interval +
-                         " seconds");
+            logger.debug("create PinkTasker for " + remoteJID + " with interval: " + interval
+                    + " seconds");
             this.remoteJID = remoteJID;
             this.delay = delay;
         }
@@ -69,7 +69,8 @@ public class PingManager {
         public void run() {
 
             try {
-                // Sleep a minimum of 15 seconds plus delay before sending first heartbeat. This will give time to
+                // Sleep a minimum of 15 seconds plus delay before sending first heartbeat. This
+                // will give time to
                 // properly finish TLS negotiation and then start sending heartbeats.
                 Thread.sleep(15000);
             } catch (InterruptedException ie) {
@@ -80,7 +81,8 @@ public class PingManager {
                 if (coreConnection.getXmppConnection().isAuthenticated()) {
                     // logger.debug("ready to ping [" + remoteJID + "]");
                     isConnected = ping(remoteJID, isConnected);
-                    // logger.debug("PingTasker: after ping: status: " + (isConnected ? "available" : "unavailable"));
+                    // logger.debug("PingTasker: after ping: status: " + (isConnected ? "available"
+                    // : "unavailable"));
                 }
                 try {
                     Thread.sleep(delay * 1000);
@@ -116,11 +118,12 @@ public class PingManager {
     public PingManager(CoreConnection coreConnection, int interval) {
 
         this.coreConnection = coreConnection;
-        ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(coreConnection.getXmppConnection());
+        ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(coreConnection
+                .getXmppConnection());
         sdm.addFeature(NAMESPACE);
         PacketFilter pingPacketFilter = new PacketTypeFilter(Ping.class);
-        coreConnection.getXmppConnection().addPacketListener(new PingPacketListener(this.coreConnection),
-            pingPacketFilter);
+        coreConnection.getXmppConnection().addPacketListener(
+                new PingPacketListener(this.coreConnection), pingPacketFilter);
         this.interval = interval;
     }
 
@@ -142,7 +145,8 @@ public class PingManager {
         Ping ping = new Ping(coreConnection.getJID(), remoteJID);
         // logger.debug("ping: [" + remoteJID + "]");
 
-        PacketCollector collector = coreConnection.createPacketCollector(new PacketIDFilter(ping.getPacketID()));
+        PacketCollector collector = coreConnection.createPacketCollector(new PacketIDFilter(ping
+                .getPacketID()));
         coreConnection.sendPacket(ping);
         IQ result = (IQ) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
         collector.cancel();
@@ -150,18 +154,19 @@ public class PingManager {
         status = result == null || result.getType() == IQ.Type.ERROR ? false : true;
         if (result != null && result.getType() == IQ.Type.ERROR) {
             // A Error response is as good as a pong response
-            logger.debug("ping: " + remoteJID + ", error code: " + result.getError().getCode() +
-                         ", condition: " + result.getError().getCondition());
+            logger.debug("ping: " + remoteJID + ", error code: " + result.getError().getCode()
+                    + ", condition: " + result.getError().getCondition());
         }
 
-        // logger.debug("ping: " + remoteJID + " is " + (status == false ? "not" : "") + " available ...");
+        // logger.debug("ping: " + remoteJID + " is " + (status == false ? "not" : "") +
+        // " available ...");
         if (status != isConnected) {
-            logger.debug("ping: status changed for [" + remoteJID + "]: previous status: " +
-                         (isConnected ? "available" : "unavailable") + ", new status: " +
-                         (status ? "available" : "unavailable"));
+            logger.debug("ping: status changed for [" + remoteJID + "]: previous status: "
+                    + (isConnected ? "available" : "unavailable") + ", new status: "
+                    + (status ? "available" : "unavailable"));
             coreConnection.resetRemoteStatus(remoteJID, status);
-            logger.debug("ping: after resetRemoteStatus: [" + remoteJID +
-                         (status ? "] available" : "] unavailable"));
+            logger.debug("ping: after resetRemoteStatus: [" + remoteJID
+                    + (status ? "] available" : "] unavailable"));
         }
 
         return status;

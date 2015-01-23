@@ -3,8 +3,7 @@ package com.leidos.xchangecore.core.infrastructure.xmpp.communications.ping;
 import org.jivesoftware.smack.packet.IQ;
 import org.jivesoftware.smack.packet.Packet;
 
-public class Pong
-    extends IQ {
+public class Pong extends IQ {
 
     public Pong(Packet ping) {
 

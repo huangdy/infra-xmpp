@@ -7,8 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class PubSubIQ
-    extends ArbitraryIQ {
+public class PubSubIQ extends ArbitraryIQ {
 
     public static class Subscription {
         public String subscription;

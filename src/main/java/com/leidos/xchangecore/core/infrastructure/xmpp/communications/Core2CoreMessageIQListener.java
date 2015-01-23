@@ -15,15 +15,14 @@ import com.leidos.xchangecore.core.infrastructure.messages.Core2CoreMessage;
 import com.leidos.xchangecore.core.infrastructure.messages.DeleteInterestGroupForRemoteCoreMessage;
 import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.ArbitraryIQ;
 
-public class Core2CoreMessageIQListener
-    implements PacketListener {
+public class Core2CoreMessageIQListener implements PacketListener {
 
     private final Logger logger = Logger.getLogger(this.getClass());
 
     private final Pattern toCoreJIDPattern = Pattern.compile("toCoreJID=[\"'](.+?)[\"']");
     private final Pattern msgTypePattern = Pattern.compile("msgType=[\"'](.+?)[\"']");
-    private final Pattern sendMessagePattern = Pattern.compile("<sendMessage (.+?)>(.+?)</sendMessage>",
-        Pattern.DOTALL | Pattern.MULTILINE);
+    private final Pattern sendMessagePattern = Pattern.compile(
+            "<sendMessage (.+?)>(.+?)</sendMessage>", Pattern.DOTALL | Pattern.MULTILINE);
 
     private final Core2CoreMessageProcessor messageProcessor;
 
@@ -35,7 +34,7 @@ public class Core2CoreMessageIQListener
 
     private void doSendMessage(String from, String packetId, String xml) {
 
-        //        log.debug("doSendMessage: received message=[" + xml + "] from " + from);
+        // log.debug("doSendMessage: received message=[" + xml + "] from " + from);
 
         String fromCore = messageProcessor.getCoreConnection().getCoreNameFromJID(from);
 
@@ -98,20 +97,23 @@ public class Core2CoreMessageIQListener
             // Handle ERROR
             XMPPError error = iq.getError();
             if (error != null) {
-                logger.error("Core2CoreMessageIQListener:processPacket: received an UNEXPECTED  error  message " +
-                             "from " + coreName + "xml=[" + xml + "]");
+                logger.error("Core2CoreMessageIQListener:processPacket: received an UNEXPECTED  error  message "
+                        + "from " + coreName + "xml=[" + xml + "]");
                 return;
             }
 
             if (xml.contains("rescindAgreement")) {
                 logger.debug("processing rescind agreement from " + from);
                 try {
-                    DeleteInterestGroupForRemoteCoreMessage message = new DeleteInterestGroupForRemoteCoreMessage(from);
-                    Message<DeleteInterestGroupForRemoteCoreMessage> theMessage = new GenericMessage<DeleteInterestGroupForRemoteCoreMessage>(message);
-                    messageProcessor.getDeleteInterestGroupSharedFromRemoteCoreChannel().send(theMessage);
+                    DeleteInterestGroupForRemoteCoreMessage message = new DeleteInterestGroupForRemoteCoreMessage(
+                            from);
+                    Message<DeleteInterestGroupForRemoteCoreMessage> theMessage = new GenericMessage<DeleteInterestGroupForRemoteCoreMessage>(
+                            message);
+                    messageProcessor.getDeleteInterestGroupSharedFromRemoteCoreChannel().send(
+                            theMessage);
                 } catch (Exception e) {
-                    logger.error("rescindAgreement: send DeleteInterestGroupForRemoteCoreMessage: " +
-                                 from + ": " + e.getMessage());
+                    logger.error("rescindAgreement: send DeleteInterestGroupForRemoteCoreMessage: "
+                            + from + ": " + e.getMessage());
                 }
                 return;
             }

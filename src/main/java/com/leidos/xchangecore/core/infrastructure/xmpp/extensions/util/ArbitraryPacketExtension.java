@@ -20,29 +20,29 @@ public class ArbitraryPacketExtension implements PacketExtension {
     private String elementName = null;
     private String namespace = null;
     private String xml = null;
-    
+
     public ArbitraryPacketExtension() {
     }
 
     public ArbitraryPacketExtension(String elementName, String namespace) {
         this.elementName = elementName;
         this.namespace = namespace;
-    }    
-    
+    }
+
     public ArbitraryPacketExtension(String elementName, String namespace, String xml) {
         this.elementName = elementName;
         this.namespace = namespace;
         this.xml = xml;
     }
-    
-    public void setXML(String xml){
+
+    public void setXML(String xml) {
         this.xml = xml;
     }
-    
-    public void setElementName(String elementName){
+
+    public void setElementName(String elementName) {
         this.elementName = elementName;
     }
-    
+
     public String getElementName() {
         return this.elementName;
     }
@@ -50,7 +50,7 @@ public class ArbitraryPacketExtension implements PacketExtension {
     public void setNamespace(String namespace) {
         this.namespace = namespace;
     }
-    
+
     public String getNamespace() {
         return this.namespace;
     }

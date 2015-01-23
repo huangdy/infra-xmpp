@@ -54,8 +54,10 @@ public class PubSubIQFactory {
      * Entity Use Case 5.1, 5.3, 5.4 <a
      * href="http://www.xmpp.org/extensions/xep-0060.html#entity-features">Discover Features</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
      * @return an IQ packet configured to...
      */
     public static IQ discoverInfo(String svc, String nodeName) {
@@ -76,8 +78,10 @@ public class PubSubIQFactory {
      * Entity Use Case 5.2, 5.5 <a
      * href="http://www.xmpp.org/extensions/xep-0060.html#entity-nodes">Discover Nodes</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
      * @return an IQ packet configured to...
      */
     public static IQ discoverItems(String svc, String nodeName) {
@@ -99,7 +103,8 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#entity-subscriptions">Retrive
      * Subscriptions</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
      * @return an IQ packet configured to...
      */
     public static IQ retrieveSubscriptions(String svc) {
@@ -124,7 +129,8 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#entity-affiliations">Retrieve
      * Affiliations</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
      * @return an IQ packet configured to...
      */
     public static IQ retrieveAffiliations(String svc) {
@@ -150,9 +156,12 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#subscriber-subscribe">Subscribe to a
      * Node</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
-     * @param jid a valid JID - eg: user@server.com, user@server.com/office, comp.server.com
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
+     * @param jid
+     *            a valid JID - eg: user@server.com, user@server.com/office, comp.server.com
      * @param xData
      * @return an IQ packet configured to...
      */
@@ -189,11 +198,15 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#subscriber-unsubscribe">Unsubscribe from a
      * Node</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
-     * @param jid a valid JID - eg: user@server.com, user@server.com/office, comp.server.com
-     * @param subid a server assigned subscription id or null. an entity's subids can be retrieved
-     *            via retrieveSubscriptions()
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
+     * @param jid
+     *            a valid JID - eg: user@server.com, user@server.com/office, comp.server.com
+     * @param subid
+     *            a server assigned subscription id or null. an entity's subids can be retrieved via
+     *            retrieveSubscriptions()
      * @return an IQ packet configured to...
      */
     public static IQ unsubscribeNode(String svc, String jid, String nodeName, String subid) {
@@ -225,16 +238,21 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#subscriber-configure">Configure
      * Subscription Options</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
-     * @param jid a valid JID - eg: user@server.com, user@server.com/office, comp.server.com
-     * @param xData an xmpp jabber:x:data snippet
-     * @param subID a server assigned subscription id or null. an entity's subids can be retrieved
-     *            via retrieveSubscriptions()
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
+     * @param jid
+     *            a valid JID - eg: user@server.com, user@server.com/office, comp.server.com
+     * @param xData
+     *            an xmpp jabber:x:data snippet
+     * @param subID
+     *            a server assigned subscription id or null. an entity's subids can be retrieved via
+     *            retrieveSubscriptions()
      * @return an IQ packet configured to...
      */
     public static IQ configureSubscriptionOptions(String svc, String jid, String nodeName,
-        String subID, DataForm xData) {
+            String subID, DataForm xData) {
 
         StringBuffer sb = new StringBuffer();
         ArbitraryIQ iq = new ArbitraryIQ();
@@ -267,11 +285,15 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#subscriber-retrieve">Retrieve Items from a
      * Node</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
-     * @param idList a string array of item IDs
-     * @param subID a server assigned subscription id or null. an entity's subids can be retrieved
-     *            via retrieveSubscriptions()
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
+     * @param idList
+     *            a string array of item IDs
+     * @param subID
+     *            a server assigned subscription id or null. an entity's subids can be retrieved via
+     *            retrieveSubscriptions()
      * @return an IQ packet configured to...
      */
     public static IQ retrieveItems(String svc, String nodeName, String subID, String[] idList) {
@@ -311,11 +333,15 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#subscriber-retrieve">Retrieve Items from a
      * Node</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
-     * @param itemID a single item id
-     * @param subID a server assigned subscription id or null. an entity's subids can be retrieved
-     *            via retrieveSubscriptions()
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
+     * @param itemID
+     *            a single item id
+     * @param subID
+     *            a server assigned subscription id or null. an entity's subids can be retrieved via
+     *            retrieveSubscriptions()
      * @return an IQ packet configured to...
      */
     public static IQ retrieveItem(String svc, String nodeName, String subID, String itemID) {
@@ -334,9 +360,12 @@ public class PubSubIQFactory {
      * <br />
      * Note: the item wrapper can be created via createItemXML(String xml)
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
-     * @param itemXML an xml snippet to be published, must have <item id=''/> as the root element
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
+     * @param itemXML
+     *            an xml snippet to be published, must have <item id=''/> as the root element
      * @return an IQ packet configured to...
      */
     public static IQ publishItem(String svc, String nodeName, String itemXML) {
@@ -362,9 +391,12 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#publisher-delete">Delete an Item to a
      * Node</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
-     * @param idList an array of item IDs to be retracted
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
+     * @param idList
+     *            an array of item IDs to be retracted
      * @return an IQ packet configured to...
      */
     public static IQ deleteItems(String svc, String nodeName, String[] idList) {
@@ -394,9 +426,12 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#publisher-delete">Delete an Item to a
      * Node</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
-     * @param itemID a single item ID to be retracted
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
+     * @param itemID
+     *            a single item ID to be retracted
      * @return an IQ packet configured to...
      */
     public static IQ deleteItem(String svc, String nodeName, String itemID) {
@@ -411,9 +446,12 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#owner-create-default">Create a Node with
      * Default Configuration</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
-     * @param nodeType either PubSubConstants.COLLECTION_NODE or PubSubConstants.LEAF_NODE
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
+     * @param nodeType
+     *            either PubSubConstants.COLLECTION_NODE or PubSubConstants.LEAF_NODE
      * @param xData
      * @return an IQ packet configured to...
      */
@@ -461,9 +499,12 @@ public class PubSubIQFactory {
      * Owner Use Case 8.2 - <a
      * href="http://www.xmpp.org/extensions/xep-0060.html#owner-configure">Configure a Node</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
-     * @param xData an xmpp jabber:x:data snippet
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
+     * @param xData
+     *            an xmpp jabber:x:data snippet
      * @return an IQ packet configured to...
      */
     public static IQ configureNode(String svc, String nodeName, DataForm xData) {
@@ -494,8 +535,10 @@ public class PubSubIQFactory {
      * Owner Use Case 8.4 - <a
      * href="http://www.xmpp.org/extensions/xep-0060.html#owner-delete">Delete a Node</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
      * @return an IQ packet configured to...
      */
     public static IQ deleteNode(String svc, String nodeName) {
@@ -520,8 +563,10 @@ public class PubSubIQFactory {
      * Owner Use Case 8.5 - <a href="http://www.xmpp.org/extensions/xep-0060.html#owner-purge">Purge
      * a Node</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
      * @return an IQ packet configured to...
      */
     public static IQ purgeItems(String svc, String nodeName) {
@@ -547,8 +592,10 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#owner-subscriptions">Manage
      * Subscriptions</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
      * @param subscriptions
      * @return an IQ packet configured to...
      */
@@ -577,8 +624,10 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#owner-affiliations">Manage
      * Affiliations</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
      * @param affiliations
      * @return an IQ packet configured to...
      */
@@ -615,17 +664,21 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#collections-subscribe">Subscribe to a
      * Collection Node</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
      * @param jid
-     * @param subType either PubSubIQConstants.NODES_SUBSCRIPTION or
+     * @param subType
+     *            either PubSubIQConstants.NODES_SUBSCRIPTION or
      *            PubSubIQConstants.ITEMS_SUBSCRIPTION
-     * @param subDepth "all" or an integer value > 0
+     * @param subDepth
+     *            "all" or an integer value > 0
      * @return an IQ packet configured to...
      */
     // 9.3
     public static IQ subscribeCollection(String svc, String jid, String nodeName, String subType,
-        String subDepth) {
+            String subDepth) {
 
         DataForm xData = new DataForm("submit");
 
@@ -650,8 +703,10 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#collections-createnode">Create a New
      * Collection Node</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
      * @param xData
      * @return an IQ packet configured to...
      */
@@ -666,15 +721,19 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#collections-createassociated">Create a
      * Node Associated with a Collection</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name
-     * @param collectionName valid collection name
-     * @param nodeType either PubSubIQConstants.COLLECTION_NODE or PubSubIQConstants.LEAF_NODE
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name
+     * @param collectionName
+     *            valid collection name
+     * @param nodeType
+     *            either PubSubIQConstants.COLLECTION_NODE or PubSubIQConstants.LEAF_NODE
      * @param xData
      * @return an IQ packet configured to...
      */
     public static IQ createAssociatedNode(String svc, String collectionName, String nodeName,
-        String nodeType, DataForm xData) {
+            String nodeType, DataForm xData) {
 
         if (xData == null) {
             xData = new DataForm("submit");
@@ -694,9 +753,12 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#collections-associate">Associate an
      * Existing Node with a Collection</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
-     * @param collectionName a valid collection name
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
+     * @param collectionName
+     *            a valid collection name
      * @return an IQ packet configured to...
      */
     public static IQ associateNodeWithCollection(String svc, String collectionName, String nodeName) {
@@ -719,8 +781,10 @@ public class PubSubIQFactory {
      * href="http://www.xmpp.org/extensions/xep-0060.html#collections-disassociate">Disassociate a
      * Node from all Collections</a>
      * 
-     * @param svc the address of the pubsub component - eg: pubsub.myserver.net
-     * @param nodeName valid node name or null for the root node
+     * @param svc
+     *            the address of the pubsub component - eg: pubsub.myserver.net
+     * @param nodeName
+     *            valid node name or null for the root node
      * @return an IQ packet configured to...
      */
     public static IQ disassociateNodeFromAllCollections(String svc, String nodeName) {
@@ -743,7 +807,8 @@ public class PubSubIQFactory {
      * Utility method for wrapping an ArbitraryIQ piece of XML with the <item id=''/> tag. An uuid
      * is automatically generated for the id.
      * 
-     * @param xml any valid xml data - this is not validated!
+     * @param xml
+     *            any valid xml data - this is not validated!
      * @return an IQ packet configured to...
      */
     public static String createItemXML(String xml) {
@@ -757,8 +822,10 @@ public class PubSubIQFactory {
      * Utility method for wrapping an ArbitraryIQ piece of XML with the <item id=''/> tag. An uuid
      * is automatically generated for the id.
      * 
-     * @param xml any valid xml data - this is not validated!
-     * @param uuid the item id of the item (used for updating the item)
+     * @param xml
+     *            any valid xml data - this is not validated!
+     * @param uuid
+     *            the item id of the item (used for updating the item)
      * @return an IQ packet configured to...
      */
     public static String createItemXML(String xml, String uuid) {

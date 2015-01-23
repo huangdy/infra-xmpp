@@ -40,7 +40,8 @@ public class Core2CoreMessageProcessor {
         log.debug("====#> Core2CoreMessageProcessor:initialize() ");
         assert coreConnection != null;
 
-        IQNamespacePacketFilter filter = new IQNamespacePacketFilter(Core2CoreMessageIQFactory.namespace);
+        IQNamespacePacketFilter filter = new IQNamespacePacketFilter(
+                Core2CoreMessageIQFactory.namespace);
         PacketTypeFilter iqFilter = new PacketTypeFilter(IQ.class);
         AndFilter andFilter = new AndFilter(iqFilter, filter);
 
@@ -48,7 +49,8 @@ public class Core2CoreMessageProcessor {
         coreConnection.addPacketListener(new Core2CoreMessageIQListener(this), andFilter);
     }
 
-    public void setCore2CoreMessageNotificationChannel(MessageChannel core2CoreMessageNotificationChannel) {
+    public void setCore2CoreMessageNotificationChannel(
+            MessageChannel core2CoreMessageNotificationChannel) {
 
         this.core2CoreMessageNotificationChannel = core2CoreMessageNotificationChannel;
     }
@@ -58,7 +60,8 @@ public class Core2CoreMessageProcessor {
         this.coreConnection = coreConnection;
     }
 
-    public void setDeleteInterestGroupSharedFromRemoteCoreChannel(MessageChannel deleteInterestGroupSharedFromRemoteCoreChannel) {
+    public void setDeleteInterestGroupSharedFromRemoteCoreChannel(
+            MessageChannel deleteInterestGroupSharedFromRemoteCoreChannel) {
 
         this.deleteInterestGroupSharedFromRemoteCoreChannel = deleteInterestGroupSharedFromRemoteCoreChannel;
     }

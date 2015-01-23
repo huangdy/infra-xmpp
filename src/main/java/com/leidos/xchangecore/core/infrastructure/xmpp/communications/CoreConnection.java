@@ -7,8 +7,7 @@ import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Packet;
 
-public interface CoreConnection
-    extends XmppConnection {
+public interface CoreConnection extends XmppConnection {
 
     public abstract void checkRoster();
 
@@ -17,7 +16,8 @@ public interface CoreConnection
     /**
      * Internal method to configure the connection with a properties file.
      * 
-     * @param propsFile properties file to use for configuration values
+     * @param propsFile
+     *            properties file to use for configuration values
      */
     public abstract void configure();
 
@@ -71,10 +71,8 @@ public interface CoreConnection
 
     public abstract void resetRemoteStatus(String remoteJID, boolean isOnline);
 
-    public void sendCoreStatusUpdate(String remotJID,
-                                     String coreStatus,
-                                     String latitude,
-                                     String longitude);
+    public void sendCoreStatusUpdate(String remotJID, String coreStatus, String latitude,
+            String longitude);
 
     public abstract void sendHeartBeat();
 
