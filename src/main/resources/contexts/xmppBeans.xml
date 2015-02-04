@@ -48,7 +48,7 @@
             </property>
         -->
         <property name="name">
-            <value>UICDS</value>
+            <value>XCHANGECORE</value>
         </property>
         <property name="resource">
             <value>CoreConnection</value>
