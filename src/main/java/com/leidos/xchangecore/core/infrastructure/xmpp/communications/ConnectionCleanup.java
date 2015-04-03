@@ -4,7 +4,8 @@ import org.apache.log4j.Logger;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.packet.StreamError;
 
-public class ConnectionCleanup implements ConnectionListener {
+public class ConnectionCleanup
+    implements ConnectionListener {
 
     private final Logger logger = Logger.getLogger(this.getClass());
 

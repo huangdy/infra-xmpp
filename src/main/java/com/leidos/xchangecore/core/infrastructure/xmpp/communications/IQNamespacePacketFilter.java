@@ -8,7 +8,8 @@ import org.jivesoftware.smack.packet.Packet;
 
 import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.ArbitraryIQ;
 
-class IQNamespacePacketFilter implements PacketFilter {
+class IQNamespacePacketFilter
+    implements PacketFilter {
 
     private Pattern nsPattern;
     private Logger log = Logger.getLogger(this.getClass());

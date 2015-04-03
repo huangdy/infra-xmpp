@@ -140,7 +140,7 @@ public interface NodeManager {
      * @throws IllegalArgumentException
      */
     public String retrieveNodeItem(String node, String itemID) throws IllegalStateException,
-            IllegalArgumentException;
+        IllegalArgumentException;
 
     // TODO: fix concurrency problem with using this call and creating Interest groups
     /**

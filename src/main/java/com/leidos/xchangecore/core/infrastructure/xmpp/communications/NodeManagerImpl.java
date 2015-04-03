@@ -45,7 +45,8 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.PubSubIQ;
  * @author roger
  *
  */
-public class NodeManagerImpl implements NodeManager {
+public class NodeManagerImpl
+    implements NodeManager {
 
     public enum NODE_ITEM_TYPE {
         ITEM, ITEM_LIST
@@ -101,7 +102,8 @@ public class NodeManagerImpl implements NodeManager {
      * @author roger
      *
      */
-    private class SubscriptionPacketFilter implements PacketFilter {
+    private class SubscriptionPacketFilter
+        implements PacketFilter {
 
         private String nodeName;
         private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -121,9 +123,9 @@ public class NodeManagerImpl implements NodeManager {
                 for (Pattern p : nodePatterns) {
                     matchFound = p.matcher(packet.toXML()).find();
                     if (matchFound) {
-                        logger.debug("accept: matched: pubsubsvc: " + getPubsubService()
-                                + ", packet.from: " + packet.getFrom() + ", for pattern: "
-                                + p.pattern());
+                        logger.debug("accept: matched: pubsubsvc: " + getPubsubService() +
+                                     ", packet.from: " + packet.getFrom() + ", for pattern: " +
+                                     p.pattern());
                         break;
                     }
                 }
@@ -207,8 +209,8 @@ public class NodeManagerImpl implements NodeManager {
             } else {
                 // If it already exists this is ok
                 if (!(command.getErrorCode() == 409)) {
-                    logger.error("Error creating " + coreConnection.getInterestGroupRoot()
-                            + " node");
+                    logger.error("Error creating " + coreConnection.getInterestGroupRoot() +
+                                 " node");
                 } else {
                     created = true;
                 }
@@ -233,8 +235,11 @@ public class NodeManagerImpl implements NodeManager {
         IQ iq = null;
 
         logger.debug("addFolder: " + folder + "/" + name);
-        iq = PubSubIQFactory.createAssociatedNode(pubsubService, folder, name,
-                PubSubConstants.COLLECTION_NODE, null);
+        iq = PubSubIQFactory.createAssociatedNode(pubsubService,
+            folder,
+            name,
+            PubSubConstants.COLLECTION_NODE,
+            null);
         // logger.info("addFolder: command[" + iq.toXML() + "]");
         CommandWithReply command;
         try {
@@ -323,8 +328,11 @@ public class NodeManagerImpl implements NodeManager {
         }
 
         // Add leaf node
-        IQ iq = PubSubIQFactory.createAssociatedNode(pubsubService, folder, topic,
-                PubSubConstants.LEAF_NODE, dataForm);
+        IQ iq = PubSubIQFactory.createAssociatedNode(pubsubService,
+            folder,
+            topic,
+            PubSubConstants.LEAF_NODE,
+            dataForm);
 
         iq.setFrom(coreConnection.getJIDPlusResource());
 
@@ -361,12 +369,13 @@ public class NodeManagerImpl implements NodeManager {
 
     private synchronized void addToSubscriptions(String node, CommandWithReply command) {
 
-        subscriptions.put(node,
-                new NodeSubscriptionInfo(coreConnection.getJID(), node,
-                        command.getSubscriptionID(), null));
+        subscriptions.put(node, new NodeSubscriptionInfo(coreConnection.getJID(),
+                                                         node,
+                                                         command.getSubscriptionID(),
+                                                         null));
 
-        logger.debug("===> subscribeToNode: subscription map contains key[" + node + "] is "
-                + subscriptions.containsKey(node));
+        logger.debug("===> subscribeToNode: subscription map contains key[" + node + "] is " +
+                     subscriptions.containsKey(node));
     }
 
     // TODO: fix concurrancy problem with using this call and creating Interest groups
@@ -442,8 +451,7 @@ public class NodeManagerImpl implements NodeManager {
                 // logger.info(
                 // "GOT a PubSubIQ from initial updates in NodeSubscription:getAllNodeItems");
                 PubSubIQ pubsub = (PubSubIQ) iqResponse;
-                Iterator<com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Item> it = pubsub
-                        .getItems();
+                Iterator<com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Item> it = pubsub.getItems();
                 while (it.hasNext()) {
                     // String item = it.next().toXML();
                     // logger.info("ITEM: "+item);
@@ -668,8 +676,8 @@ public class NodeManagerImpl implements NodeManager {
                 // logger.debug("Deleting item " + itemUUID + " from node " + nodeName);
                 removed = true;
             } else {
-                logger.error("Interest group error deleting item " + itemUUID + " from node "
-                        + nodeName);
+                logger.error("Interest group error deleting item " + itemUUID + " from node " +
+                             nodeName);
                 if (command.getErrorType() == XMPPError.Type.AUTH) {
                     logger.error("   Not authorized for this action.");
                 } else {
@@ -758,7 +766,7 @@ public class NodeManagerImpl implements NodeManager {
      */
     @Override
     public String retrieveNodeItem(String node, String itemID) throws IllegalStateException,
-            IllegalArgumentException {
+        IllegalArgumentException {
 
         // Get the subscription ID
         if (subscriptions == null || node == null) {
@@ -826,8 +834,7 @@ public class NodeManagerImpl implements NodeManager {
                     // logger.info("GOT a PubSubIQ from initial updates");
                     PubSubIQ pubsub = (PubSubIQ) iqResponse;
                     // logger.info("retrieveItem XML: " + iqResponse.toXML());
-                    Iterator<com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Item> it = pubsub
-                            .getItems();
+                    Iterator<com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Item> it = pubsub.getItems();
                     while (it.hasNext()) {
                         String item = it.next().toXML();
                         // logger.info("retrieveItem ITEM: " + item);
@@ -894,7 +901,9 @@ public class NodeManagerImpl implements NodeManager {
             logger.debug("subscribeToNode: node: " + node + ", from: " + pubsubService);
 
             IQ iq = PubSubIQFactory.subscribeNode(pubsubService,
-                    coreConnection.getJIDPlusResource(), node, null);
+                coreConnection.getJIDPlusResource(),
+                node,
+                null);
 
             logger.debug("subscribeToNode: request IQ:[\n" + iq.toXML() + "\n]");
 
@@ -923,8 +932,8 @@ public class NodeManagerImpl implements NodeManager {
                 logger.debug("subscribeToNode: reply: [" + command.getResult().toXML() + "]");
 
                 // Save subscription information
-                logger.debug("adding subscription to node[" + node + "] with subid="
-                        + command.getSubscriptionID() + " to subacriptionMap");
+                logger.debug("adding subscription to node[" + node + "] with subid=" +
+                             command.getSubscriptionID() + " to subacriptionMap");
 
                 addToSubscriptions(node, command);
 
@@ -946,8 +955,8 @@ public class NodeManagerImpl implements NodeManager {
             subscriptionPacketFilter.addNodeFilter(node);
             coreConnection.addPacketListener(listener, subscriptionPacketFilter);
 
-            logger.debug("subscribeToNode: already subscribed node: " + node + ", from: "
-                    + pubsubService);
+            logger.debug("subscribeToNode: already subscribed node: " + node + ", from: " +
+                         pubsubService);
         }
 
         try {
@@ -955,7 +964,7 @@ public class NodeManagerImpl implements NodeManager {
             messages = getAllNodeItems(node);
             if (messages != null && !messages.isEmpty()) {
                 PubSubEventExtension pubsubExt = new PubSubEventExtension("event",
-                        "http://jabber.org/protocol/pubsub#event");
+                                                                          "http://jabber.org/protocol/pubsub#event");
                 for (String message : messages) {
                     logger.debug("subscribeToNode: processing: [" + message + "]");
                     pubsubExt.addItem(message);
@@ -968,8 +977,8 @@ public class NodeManagerImpl implements NodeManager {
         } catch (IllegalArgumentException e) {
             messages = new ArrayList<String>();
         } catch (IllegalStateException e) {
-            logger.error("ERROR NodeSubscriptionManager:subscribeToNode getAllNodeItems failed: "
-                    + e);
+            logger.error("ERROR NodeSubscriptionManager:subscribeToNode getAllNodeItems failed: " +
+                         e);
         } catch (Exception e) {
             logger.error("ERROR NodeSubscriptionManager:subscribeToNode " + node + " : " + e);
             e.printStackTrace();
@@ -1000,11 +1009,13 @@ public class NodeManagerImpl implements NodeManager {
 
     private void unsubscribe(NodeSubscriptionInfo nodeInfo) {
 
-        logger.debug("unsubscribe: pubsubsvc: " + pubsubService + ", JID: " + nodeInfo.jid
-                + ", Node: " + nodeInfo.node + ", subID: " + nodeInfo.subid);
+        logger.debug("unsubscribe: pubsubsvc: " + pubsubService + ", JID: " + nodeInfo.jid +
+                     ", Node: " + nodeInfo.node + ", subID: " + nodeInfo.subid);
 
-        IQ iq = PubSubIQFactory.unsubscribeNode(pubsubService, nodeInfo.jid, nodeInfo.node,
-                nodeInfo.subid);
+        IQ iq = PubSubIQFactory.unsubscribeNode(pubsubService,
+            nodeInfo.jid,
+            nodeInfo.node,
+            nodeInfo.subid);
         CommandWithReply command;
         try {
             command = coreConnection.createCommandWithReply(iq);
@@ -1085,8 +1096,8 @@ public class NodeManagerImpl implements NodeManager {
         Set<String> nodeNameSet = subscriptions.keySet();
         for (String nodeName : nodeNameSet) {
             NodeSubscriptionInfo nodeInfo = subscriptions.get(nodeName);
-            if (nodeInfo.node.equals(nodeName)
-                    && nodeInfo.jid.indexOf(coreConnection.getJID()) != -1) {
+            if (nodeInfo.node.equals(nodeName) &&
+                nodeInfo.jid.indexOf(coreConnection.getJID()) != -1) {
                 unsubscribe(nodeInfo);
             }
         }
@@ -1136,8 +1147,9 @@ public class NodeManagerImpl implements NodeManager {
                 String xml = "<?xml version='1.0'?>" + command.getResult().toXML();
                 // logger.info("updateSubscriptionMap: reply=[" + xml + "]");
                 try {
-                    Object res = pubsubXpath.evaluate("//pubsub:subscriptions", new InputSource(
-                            new StringReader(xml)), XPathConstants.NODE);
+                    Object res = pubsubXpath.evaluate("//pubsub:subscriptions",
+                        new InputSource(new StringReader(xml)),
+                        XPathConstants.NODE);
                     Node n = (Node) res;
                     if (n != null) {
                         NodeList nl = n.getChildNodes();
@@ -1172,8 +1184,10 @@ public class NodeManagerImpl implements NodeManager {
                                 // logger.debug("NodeSubscriptionManager:updateSubscriptionMap subscription: "
                                 // + jid + " " + node + " " + subid + " " + affiliation);
 
-                                NodeSubscriptionInfo item = new NodeSubscriptionInfo(jid, node,
-                                        subid, affiliation);
+                                NodeSubscriptionInfo item = new NodeSubscriptionInfo(jid,
+                                                                                     node,
+                                                                                     subid,
+                                                                                     affiliation);
                                 subscriptions.put(node, item);
                             }
                         }
@@ -1192,8 +1206,8 @@ public class NodeManagerImpl implements NodeManager {
         }
 
         if (command.getErrorType() == XMPPError.Type.CANCEL && command.getErrorCode() == 404) {
-            logger.error("updateSubscriptionMap: type: " + command.getErrorType() + ", code: "
-                    + command.getErrorCode() + ", message: " + command.getErrorMessage());
+            logger.error("updateSubscriptionMap: type: " + command.getErrorType() + ", code: " +
+                         command.getErrorCode() + ", message: " + command.getErrorMessage());
             subscriptions.clear();
         } else {
             logger.error("updateSubscriptionMap:   message: " + command.getErrorMessage());

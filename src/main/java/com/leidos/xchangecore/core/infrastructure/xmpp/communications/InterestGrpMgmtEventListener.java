@@ -9,7 +9,8 @@ import org.jivesoftware.smack.packet.PacketExtension;
 import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.interestgroupmgmt.InterestGrpManagementEventFactory;
 import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.InterestGrpMgmtEventExtension;
 
-public class InterestGrpMgmtEventListener implements PacketListener {
+public class InterestGrpMgmtEventListener
+    implements PacketListener {
 
     private Logger log = Logger.getLogger(this.getClass());
 
@@ -51,8 +52,8 @@ public class InterestGrpMgmtEventListener implements PacketListener {
 
                     }
                 } else {
-                    log.error("IncdMgmtEventListener received a message for an unowned interest group: "
-                            + packet.toXML());
+                    log.error("IncdMgmtEventListener received a message for an unowned interest group: " +
+                              packet.toXML());
                 }
             }
         }

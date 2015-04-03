@@ -22,7 +22,8 @@ import com.leidos.xchangecore.core.infrastructure.messages.CoreStatusUpdateMessa
 
 public class RosterManager {
 
-    private class CoreRosterListener implements RosterListener {
+    private class CoreRosterListener
+        implements RosterListener {
 
         private final Logger logger = LoggerFactory.getLogger(getClass());
         private final CoreConnection coreConnection;
@@ -37,16 +38,17 @@ public class RosterManager {
 
             for (String jid : jids) {
 
-                logger.debug("entriesAdded: [" + jid + "]: avialability: "
-                        + roster.getPresence(jid).getType() + ", subscription: "
-                        + roster.getEntry(jid).getType());
+                logger.debug("entriesAdded: [" + jid + "]: avialability: " +
+                             roster.getPresence(jid).getType() + ", subscription: " +
+                             roster.getEntry(jid).getType());
                 rosterSubscriptionMap.put(jid, roster.getEntry(jid).getType());
                 // rosterMap.put(jid, jid);
-                coreConnection
-                        .sendCoreStatusUpdate(
-                                jid,
-                                roster.getEntry(jid).getType().equals(ItemType.both) ? CoreStatusUpdateMessage.Status_Available
-                                        : CoreStatusUpdateMessage.Status_UnAvailable, "", "");
+                coreConnection.sendCoreStatusUpdate(jid,
+                    roster.getEntry(jid).getType().equals(ItemType.both)
+                                                                        ? CoreStatusUpdateMessage.Status_Available
+                                                                        : CoreStatusUpdateMessage.Status_UnAvailable,
+                    "",
+                    "");
             }
         }
 
@@ -66,9 +68,9 @@ public class RosterManager {
             for (String jid : jids) {
 
                 ItemType subscription = roster.getEntry(jid).getType();
-                logger.debug("entriesUpdated: [" + jid + "]: availability: "
-                        + roster.getPresence(jid).getType() + ", subscription: " + subscription
-                        + ", previouse subscription: " + rosterSubscriptionMap.get(jid));
+                logger.debug("entriesUpdated: [" + jid + "]: availability: " +
+                             roster.getPresence(jid).getType() + ", subscription: " + subscription +
+                             ", previouse subscription: " + rosterSubscriptionMap.get(jid));
                 String lat = "";
                 String lon = "";
                 if (rosterLatLonMap.get(jid) != null) {
@@ -78,32 +80,39 @@ public class RosterManager {
                     lon = tokens[1];
                 }
 
-                logger.debug("entriesUpdated: set ["
-                        + jid
-                        + "] to "
-                        + (subscription.equals(ItemType.both) ? CoreStatusUpdateMessage.Status_Subscribed
-                                : CoreStatusUpdateMessage.Status_UnAvailable));
+                logger.debug("entriesUpdated: set [" +
+                             jid +
+                             "] to " +
+                             (subscription.equals(ItemType.both)
+                                                                ? CoreStatusUpdateMessage.Status_Subscribed
+                                                                : CoreStatusUpdateMessage.Status_UnAvailable));
                 if (subscription.equals(ItemType.none) && !rosterMap.containsKey(jid)) {
                     removeRoster(jid);
                     coreConnection.sendCoreStatusUpdate(jid,
-                            CoreStatusUpdateMessage.Status_UnSubscribed, lat, lon);
+                        CoreStatusUpdateMessage.Status_UnSubscribed,
+                        lat,
+                        lon);
                 } else if (subscription.equals(ItemType.both)) {
-                    logger.debug("entriesUpdated: status is both, set [" + jid
-                            + "] to true for mutually agreed");
+                    logger.debug("entriesUpdated: status is both, set [" + jid +
+                                 "] to true for mutually agreed");
                     coreConnection.setRemoteCoreMutuallyAgreed(jid, true);
                     coreConnection.sendCoreStatusUpdate(jid,
-                            CoreStatusUpdateMessage.Status_Available, lat, lon);
+                        CoreStatusUpdateMessage.Status_Available,
+                        lat,
+                        lon);
                 } else {
                     if (subscription.equals(ItemType.from) && rosterMap.containsKey(jid)) {
                         logger.debug("entriesUpdated: " + jid + " is online, re-subscribe it");
                         sendSubscribeRequest(jid);
                     }
                     coreConnection.sendCoreStatusUpdate(jid,
-                            CoreStatusUpdateMessage.Status_UnAvailable, lat, lon);
+                        CoreStatusUpdateMessage.Status_UnAvailable,
+                        lat,
+                        lon);
                     // getAgreementDAO().setRemoteCoreMutuallyAgreed(jid, false);
                 }
-                logger.debug("entriesUpdated: save [" + subscription + "] as " + jid
-                        + " as previous subscription");
+                logger.debug("entriesUpdated: save [" + subscription + "] as " + jid +
+                             " as previous subscription");
                 rosterSubscriptionMap.put(jid, subscription);
                 /*
                  * if (subscription.equals(ItemType.none)) { if
@@ -135,27 +144,30 @@ public class RosterManager {
             String remoteJID = presence.getFrom();
             ItemType subscription = roster.getEntry(presence.getTo()).getType();
 
-            logger.debug("presenceChanged: fromJID: " + remoteJID + ", presence: "
-                    + presence.getType() + ", toJID: " + presence.getTo() + ",  suscription: "
-                    + subscription);
+            logger.debug("presenceChanged: fromJID: " + remoteJID + ", presence: " +
+                         presence.getType() + ", toJID: " + presence.getTo() + ",  suscription: " +
+                         subscription);
             logger.debug("presenceChanged: [" + presence.toXML() + "]");
 
             String availability = CoreStatusUpdateMessage.Status_UnSubscribed;
             if (presence.getType().equals(Type.available) && subscription.equals(ItemType.both)) {
                 availability = CoreStatusUpdateMessage.Status_Available;
             }
-            DefaultPacketExtension geoloc = (DefaultPacketExtension) presence.getExtension(
-                    "geoloc", "http://jabber.org/protocol/geoloc");
+            DefaultPacketExtension geoloc = (DefaultPacketExtension) presence.getExtension("geoloc",
+                "http://jabber.org/protocol/geoloc");
             if (geoloc == null) {
                 coreConnection.sendCoreStatusUpdate(remoteJID, availability, "", "");
             } else {
-                coreConnection.sendCoreStatusUpdate(remoteJID, availability,
-                        geoloc.getValue("lat"), geoloc.getValue("lon"));
+                coreConnection.sendCoreStatusUpdate(remoteJID,
+                    availability,
+                    geoloc.getValue("lat"),
+                    geoloc.getValue("lon"));
             }
         }
     }
 
-    private class PresencePacketListener implements PacketListener {
+    private class PresencePacketListener
+        implements PacketListener {
 
         private final Logger logger = LoggerFactory.getLogger(PresencePacketListener.class);
 
@@ -173,35 +185,33 @@ public class RosterManager {
 
                 Presence presence = (Presence) packet;
                 // Get the JID
-                String bareJID = org.jivesoftware.smack.util.StringUtils.parseBareAddress(presence
-                        .getFrom());
+                String bareJID = org.jivesoftware.smack.util.StringUtils.parseBareAddress(presence.getFrom());
                 String fullJID = presence.getFrom();
 
                 // Ignore presence messages from this core (all resources)
                 if (!bareJID.equalsIgnoreCase(coreConnection.getJID())) {
 
-                    DefaultPacketExtension geoloc = (DefaultPacketExtension) presence.getExtension(
-                            "geoloc", "http://jabber.org/protocol/geoloc");
+                    DefaultPacketExtension geoloc = (DefaultPacketExtension) presence.getExtension("geoloc",
+                        "http://jabber.org/protocol/geoloc");
 
                     // Check for any outstanding presence subscription requests and
                     // respond if necessary and it is in our list of knownCores
                     if (rosterMap.containsKey(bareJID.toLowerCase())) {
-                        logger.debug("processPacket: [" + fullJID + "], availability: "
-                                + roster.getPresence(fullJID).getType() + ", subscription: "
-                                + roster.getEntry(fullJID).getType() + ", presenceType: "
-                                + presence.getType());
+                        logger.debug("processPacket: [" + fullJID + "], availability: " +
+                                     roster.getPresence(fullJID).getType() + ", subscription: " +
+                                     roster.getEntry(fullJID).getType() + ", presenceType: " +
+                                     presence.getType());
                         if (geoloc != null) {
-                            logger.debug("processPacket: lat/lon: " + geoloc.getValue("lat") + "/"
-                                    + geoloc.getValue("lon"));
-                            rosterLatLonMap.put(fullJID, new String(geoloc.getValue("lat") + ","
-                                    + geoloc.getValue("lon")));
-                            coreConnection
-                                    .sendCoreStatusUpdate(
-                                            fullJID,
-                                            roster.getEntry(fullJID).getType()
-                                                    .equals(ItemType.both) ? CoreStatusUpdateMessage.Status_Available
-                                                    : CoreStatusUpdateMessage.Status_UnAvailable,
-                                            geoloc.getValue("lat"), geoloc.getValue("lon"));
+                            logger.debug("processPacket: lat/lon: " + geoloc.getValue("lat") + "/" +
+                                         geoloc.getValue("lon"));
+                            rosterLatLonMap.put(fullJID, new String(geoloc.getValue("lat") + "," +
+                                                                    geoloc.getValue("lon")));
+                            coreConnection.sendCoreStatusUpdate(fullJID,
+                                roster.getEntry(fullJID).getType().equals(ItemType.both)
+                                                                                        ? CoreStatusUpdateMessage.Status_Available
+                                                                                        : CoreStatusUpdateMessage.Status_UnAvailable,
+                                geoloc.getValue("lat"),
+                                geoloc.getValue("lon"));
                         }
                     }
                 }
@@ -235,8 +245,8 @@ public class RosterManager {
         coreConnection = con;
 
         if (!rosterMap.containsValue(coreConnection.getServer().toLowerCase())) {
-            logger.debug("RosterManager : adding to map: JID=" + coreConnection.getJID() + " name="
-                    + coreConnection.getServer());
+            logger.debug("RosterManager : adding to map: JID=" + coreConnection.getJID() +
+                         " name=" + coreConnection.getServer());
             rosterMap.put(coreConnection.getJID(), coreConnection.getJID());
         }
 
@@ -257,8 +267,8 @@ public class RosterManager {
         roster.setSubscriptionMode(Roster.SubscriptionMode.accept_all);
 
         // add presence listener
-        coreConnection.addPacketListener(new PresencePacketListener(), new PacketTypeFilter(
-                Presence.class));
+        coreConnection.addPacketListener(new PresencePacketListener(),
+            new PacketTypeFilter(Presence.class));
     }
 
     public ItemType createEntry(String remoteJID, String name, String[] groups) {
@@ -269,8 +279,8 @@ public class RosterManager {
         if (!remoteJID.equalsIgnoreCase(coreConnection.getJID())) {
             try {
                 if (!roster.contains(remoteJID)) {
-                    logger.debug("createEntry: [" + remoteJID
-                            + "] not existed in roster, create it");
+                    logger.debug("createEntry: [" + remoteJID +
+                                 "] not existed in roster, create it");
                     roster.createEntry(remoteJID, name, groups);
                 }
                 logger.debug("createEntry: subscribe to " + remoteJID);
@@ -332,14 +342,16 @@ public class RosterManager {
         HashMap<String, String> map = new HashMap<String, String>();
         Collection<RosterEntry> rosters = roster.getEntries();
         for (RosterEntry entry : rosters) {
-            logger.debug("getRosterStatus: JID: "
-                    + entry.getUser()
-                    + ", availabilty: "
-                    + (roster.getEntry(entry.getUser()).getType().equals(ItemType.both) ? CoreStatusUpdateMessage.Status_Available
-                            : CoreStatusUpdateMessage.Status_UnSubscribed));
+            logger.debug("getRosterStatus: JID: " +
+                         entry.getUser() +
+                         ", availabilty: " +
+                         (roster.getEntry(entry.getUser()).getType().equals(ItemType.both)
+                                                                                          ? CoreStatusUpdateMessage.Status_Available
+                                                                                          : CoreStatusUpdateMessage.Status_UnSubscribed));
             map.put(entry.getUser(),
-                    roster.getEntry(entry.getUser()).getType().equals(ItemType.both) ? CoreStatusUpdateMessage.Status_Available
-                            : CoreStatusUpdateMessage.Status_UnSubscribed);
+                roster.getEntry(entry.getUser()).getType().equals(ItemType.both)
+                                                                                ? CoreStatusUpdateMessage.Status_Available
+                                                                                : CoreStatusUpdateMessage.Status_UnSubscribed);
         }
         return map;
     }
@@ -388,9 +400,9 @@ public class RosterManager {
 
         Collection<RosterEntry> entries = roster.getEntries();
         for (RosterEntry entry : entries) {
-            logger.debug("printRoster: JID: " + entry.getUser() + ", availability: "
-                    + roster.getPresence(entry.getUser()).getType() + ", subscription: "
-                    + entry.getType());
+            logger.debug("printRoster: JID: " + entry.getUser() + ", availability: " +
+                         roster.getPresence(entry.getUser()).getType() + ", subscription: " +
+                         entry.getType());
         }
     }
 
@@ -402,7 +414,9 @@ public class RosterManager {
         }
         if (rosterSubscriptionMap.get(remoteJID).equals(ItemType.none)) {
             coreConnection.sendCoreStatusUpdate(remoteJID,
-                    CoreStatusUpdateMessage.Status_UnSubscribed, "", "");
+                CoreStatusUpdateMessage.Status_UnSubscribed,
+                "",
+                "");
         } else {
             sendUnsubscribeRequest(remoteJID);
         }
@@ -468,14 +482,14 @@ public class RosterManager {
 
         Collection<RosterEntry> rosters = roster.getEntries();
         for (RosterEntry rosterEntry : rosters) {
-            logger.debug("updateRosterMap: [" + rosterEntry.getUser() + " with subscription: "
-                    + rosterEntry.getType());
+            logger.debug("updateRosterMap: [" + rosterEntry.getUser() + " with subscription: " +
+                         rosterEntry.getType());
             if (rosterEntry.getType().equals(ItemType.none)) {
                 try {
                     roster.removeEntry(rosterEntry);
                 } catch (Exception e) {
-                    logger.warn("updateRosterEntry: [" + rosterEntry.getUser() + "]: "
-                            + e.getMessage());
+                    logger.warn("updateRosterEntry: [" + rosterEntry.getUser() + "]: " +
+                                e.getMessage());
                 }
             } else {
                 rosterMap.put(rosterEntry.getUser(), rosterEntry.getName());

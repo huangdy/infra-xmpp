@@ -12,7 +12,8 @@ import org.jivesoftware.smack.packet.Packet;
  *
  * @author vmuser
  */
-public class PresenceEnrichment implements PacketInterceptor {
+public class PresenceEnrichment
+    implements PacketInterceptor {
 
     private String latitude = "0.0";
     private String longitude = "0.0";
@@ -27,7 +28,7 @@ public class PresenceEnrichment implements PacketInterceptor {
     public void interceptPacket(Packet packet) {
 
         DefaultPacketExtension location = new DefaultPacketExtension("geoloc",
-                "http://jabber.org/protocol/geoloc");
+                                                                     "http://jabber.org/protocol/geoloc");
         location.setValue("lat", latitude);
         location.setValue("lon", longitude);
         packet.addExtension(location);
