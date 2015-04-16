@@ -1,28 +1,15 @@
 package com.leidos.xchangecore.core.infrastructure.xmpp.communications;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.Attribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
 
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.XMPPException;
@@ -38,6 +25,7 @@ import com.leidos.xchangecore.core.infrastructure.messages.DeleteJoinedInterestG
 import com.leidos.xchangecore.core.infrastructure.messages.DisseminationManagerMessage;
 import com.leidos.xchangecore.core.infrastructure.messages.JoinedInterestGroupNotificationMessage;
 import com.leidos.xchangecore.core.infrastructure.messages.ShareInterestGroupMessage;
+import com.leidos.xchangecore.core.infrastructure.util.LdapUtil;
 import com.leidos.xchangecore.core.infrastructure.xmpp.communications.NodeManagerImpl.NODE_ITEM_TYPE;
 import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.interestgroupmgmt.InterestGrpManagementEventFactory;
 import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.interestgroupmgmt.InterestGrptManagementIQFactory;
@@ -49,9 +37,9 @@ public class InterestGroupManager {
         OWNED, JOIN_IN_PROGRESS, JOINED, RESIGN_IN_PROGRESS, RESIGNED, ERROR
     }
 
-    private final Logger logger = Logger.getLogger(this.getClass());
-
     public static final String productsNodeSuffix = "_WorkProducts";
+
+    private final Logger logger = Logger.getLogger(this.getClass());
 
     private final Object processSuspendedUpdatesLock = new Object();;
 
@@ -67,8 +55,8 @@ public class InterestGroupManager {
     private final ArrayList<InterestGroup> failedJoins = new ArrayList<InterestGroup>();
 
     private CoreConnection coreConnection;
-
     private InterestManager interestManager;
+    private LdapUtil ldapUtil;
 
     private MessageChannel joinedPublishProductNotificationChannel;
     private MessageChannel joinedInterestGroupNotificationChannel;
@@ -81,17 +69,11 @@ public class InterestGroupManager {
      */
     private MessageChannel disseminationManagerChannel;
 
-    private final Pattern commonNamePattern = Pattern.compile("cn=([^,]+)");
-
-    private String username;
-
-    private String password;
-
     private synchronized void addJoiningCoreToInterestGroup(InterestGroup interestGroup,
                                                             String joinedCore) {
 
         logger.debug("addJoiningCoreToInterestGroup: add JID: " + joinedCore + " to IGID: " +
-                     interestGroup.interestGroupID);
+            interestGroup.interestGroupID);
         joiningCores.get(interestGroup.interestGroupID).add(joinedCore);
     }
 
@@ -109,9 +91,9 @@ public class InterestGroupManager {
 
     public void cleanupInterestGroupSharedFromRemoteCore(String remoteJID, String interestGroupID) {
 
-        DeleteInterestGroupForRemoteCoreMessage message = new DeleteInterestGroupForRemoteCoreMessage(remoteJID,
-                                                                                                      interestGroupID);
-        Message<DeleteInterestGroupForRemoteCoreMessage> deleteMessage = new GenericMessage<DeleteInterestGroupForRemoteCoreMessage>(message);
+        final DeleteInterestGroupForRemoteCoreMessage message = new DeleteInterestGroupForRemoteCoreMessage(remoteJID,
+                                                                                                            interestGroupID);
+        final Message<DeleteInterestGroupForRemoteCoreMessage> deleteMessage = new GenericMessage<DeleteInterestGroupForRemoteCoreMessage>(message);
         getDeleteInterestGroupSharedFromRemoteCoreChannel().send(deleteMessage);
     }
 
@@ -124,25 +106,6 @@ public class InterestGroupManager {
             }
         }
     }
-
-    /*
-     * public void coreStatusUpdateHandler(CoreStatusUpdateMessage message) {
-     *
-     * String coreName = message.getCoreName(); String coreStatus = message.getCoreStatus();
-     *
-     * if (coreName.endsWith("/CoreConnection")) { coreName = coreName.substring(0,
-     * coreName.indexOf("/CoreConnection")); }
-     *
-     * logger.debug("coreStatusUpdateHandler: coreName: " + coreName + ", status: " + coreStatus);
-     * if (coreStatus.equals("available")) {
-     * logger.debug("coreStatusUpdateHandler: recover/restore the saved messages now ...");
-     * List<String> messageSet = getQueuedMessageDAO().getMessagesByCorename(coreName); if
-     * (messageSet != null) { logger.debug("coreStatusUpdateHandler: found " + messageSet.size() +
-     * " interest groups to recover"); for (String m : messageSet) { //
-     * logger.debug("coreStatusUpdateHandler: message:\n[" + m + "\n]"); Object o =
-     * SerializerUtil.deserialize(m); if (o instanceof ShareInterestGroupMessage) {
-     * shareInterestGroup((ShareInterestGroupMessage) o); } } } } }
-     */
 
     public String createInterestGroup(InterestGroup interestGroup) {
 
@@ -179,8 +142,8 @@ public class InterestGroupManager {
             // RDW - need to figure out what to do when the return from addFolder is null
             // i.e. the creation of the node failed.
             interestManager.addFolder(interestGroup.interestGroupPubsubService,
-                coreConnection.getInterestGroupRoot(),
-                interestGroup.interestGroupNode);
+                                      coreConnection.getInterestGroupRoot(),
+                                      interestGroup.interestGroupNode);
 
             // update the subscription map
             interestManager.updateSubscriptionMap(interestGroup.interestGroupPubsubService);
@@ -202,11 +165,11 @@ public class InterestGroupManager {
 
         if (discoItems != null) {
             // Get the discovered items of the queried XMPP entity
-            Iterator<DiscoverItems.Item> it = discoItems.getItems();
+            final Iterator<DiscoverItems.Item> it = discoItems.getItems();
             // Display the items of the remote XMPP entity
             while (it.hasNext()) {
 
-                DiscoverItems.Item item = it.next();
+                final DiscoverItems.Item item = it.next();
 
                 if (item.getName().equals(coreConnection.getInterestGroupRoot())) {
                     hasInterestGroupRoot = true;
@@ -217,7 +180,7 @@ public class InterestGroupManager {
         if (!hasInterestGroupRoot) {
             logger.info("Add interestGroup root collection");
             hasInterestGroupRoot = interestManager.addCollection(coreConnection.getPubSubSvc(),
-                coreConnection.getInterestGroupRoot());
+                                                                 coreConnection.getInterestGroupRoot());
             if (!hasInterestGroupRoot) {
                 logger.error("Root collection not created");
             }
@@ -225,12 +188,31 @@ public class InterestGroupManager {
         return hasInterestGroupRoot;
     }
 
+    /*
+     * public void coreStatusUpdateHandler(CoreStatusUpdateMessage message) {
+     *
+     * String coreName = message.getCoreName(); String coreStatus = message.getCoreStatus();
+     *
+     * if (coreName.endsWith("/CoreConnection")) { coreName = coreName.substring(0,
+     * coreName.indexOf("/CoreConnection")); }
+     *
+     * logger.debug("coreStatusUpdateHandler: coreName: " + coreName + ", status: " + coreStatus);
+     * if (coreStatus.equals("available")) {
+     * logger.debug("coreStatusUpdateHandler: recover/restore the saved messages now ...");
+     * List<String> messageSet = getQueuedMessageDAO().getMessagesByCorename(coreName); if
+     * (messageSet != null) { logger.debug("coreStatusUpdateHandler: found " + messageSet.size() +
+     * " interest groups to recover"); for (String m : messageSet) { //
+     * logger.debug("coreStatusUpdateHandler: message:\n[" + m + "\n]"); Object o =
+     * SerializerUtil.deserialize(m); if (o instanceof ShareInterestGroupMessage) {
+     * shareInterestGroup((ShareInterestGroupMessage) o); } } } } }
+     */
+
     public void deleteInerestGroupAtJoinedCore(String remoteJID) {
 
         logger.debug("deleteInerestGroupAtJoinedCore: retry to remove incidents which shared with " +
-                     remoteJID);
-        ArrayList<String> interestGroupIDList = new ArrayList<String>();
-        for (String interestGroupID : joiningCores.keySet()) {
+            remoteJID);
+        final ArrayList<String> interestGroupIDList = new ArrayList<String>();
+        for (final String interestGroupID : joiningCores.keySet()) {
             if (joiningCores.get(interestGroupID).contains(remoteJID)) {
                 logger.debug("deleteInerestGroupAtJoinedCore: interestGroupID: " + interestGroupID +
                              " is shared with remote core: " + remoteJID);
@@ -238,10 +220,10 @@ public class InterestGroupManager {
             }
         }
         logger.debug("deleteInerestGroupAtJoinedCore: total " + interestGroupIDList.size() +
-                     " IGs are shared");
-        for (String interestGroupID : interestGroupIDList) {
+            " IGs are shared");
+        for (final String interestGroupID : interestGroupIDList) {
             logger.debug("deleteInerestGroupAtJoinedCore: delete interestGroupID: " +
-                         interestGroupID + " @ " + remoteJID);
+                interestGroupID + " @ " + remoteJID);
             // TODO we will let Core2CoreMessage to handle this at remote core
             // interestManager.sendCleanupJoinedInterestGroupMessage(remoteJID, interestGroupID);
             removeJoiningCoreFromInterestGroup(interestGroupID, remoteJID);
@@ -252,27 +234,27 @@ public class InterestGroupManager {
 
         logger.debug("deleteInterestGroup: interestGroupID=" + interestGroupID);
 
-        InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
+        final InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
         if (interestGroup != null) {
 
-            Set<String> joinedCoreJIDs = interestGroup.joinedCoreJIDMap.keySet();
-            for (String joinedCoreJID : joinedCoreJIDs) {
+            final Set<String> joinedCoreJIDs = interestGroup.joinedCoreJIDMap.keySet();
+            for (final String joinedCoreJID : joinedCoreJIDs) {
                 interestManager.sendDeleteJoinedInterestGroupMessage(joinedCoreJID, interestGroupID);
             }
 
             // delete all the work product type nodes
-            for (String wpType : interestGroup.workProductTypes) {
-                String wpTypeNode = wpType + "_" + interestGroupID;
+            for (final String wpType : interestGroup.workProductTypes) {
+                final String wpTypeNode = wpType + "_" + interestGroupID;
                 interestManager.removeNode(interestGroup.interestGroupPubsubService, wpTypeNode);
             }
 
             // Unsubscribe to all nodes for this interest group
             interestManager.unsubscribeAllForInterestGroup(interestGroup.interestGroupPubsubService,
-                interestGroupID);
+                                                           interestGroupID);
 
             // delete the interest group node
             interestManager.removeNode(interestGroup.interestGroupPubsubService,
-                interestGroup.interestGroupNode);
+                                       interestGroup.interestGroupNode);
 
             // add to interest group status map
             // log.debug("createInterestGroup: add interest group to map");
@@ -294,9 +276,9 @@ public class InterestGroupManager {
             }
         }
 
-        DeleteJoinedInterestGroupMessage message = new DeleteJoinedInterestGroupMessage();
+        final DeleteJoinedInterestGroupMessage message = new DeleteJoinedInterestGroupMessage();
         message.setInterestGroupID(interestGroupID);
-        Message<DeleteJoinedInterestGroupMessage> notification = new GenericMessage<DeleteJoinedInterestGroupMessage>(message);
+        final Message<DeleteJoinedInterestGroupMessage> notification = new GenericMessage<DeleteJoinedInterestGroupMessage>(message);
         getDeleteJoinedInterestGroupNotificationChannel().send(notification);
 
     }
@@ -306,25 +288,25 @@ public class InterestGroupManager {
         logger.info("deleteWorkProduct: interestGroupID=" + interestGroupID + " wpType=" + wpType +
                     " wpID=" + wpID);
 
-        InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
+        final InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
         if (interestGroup != null) {
 
-            Set<String> joinedCoreJIDs = interestGroup.joinedCoreJIDMap.keySet();
-            for (String joinedCoreJID : joinedCoreJIDs) {
+            final Set<String> joinedCoreJIDs = interestGroup.joinedCoreJIDMap.keySet();
+            for (final String joinedCoreJID : joinedCoreJIDs) {
                 interestManager.sendDeleteJoinedProductMessage(joinedCoreJID, wpID);
             }
 
             if (interestGroup.workProductTypes.contains(wpType)) {
-                String wpTypeNode = wpType + "_" + interestGroupID;
+                final String wpTypeNode = wpType + "_" + interestGroupID;
                 try {
                     if (interestManager.retrieveNodeItem(interestGroup.interestGroupPubsubService,
-                        wpTypeNode,
-                        wpID) != null) {
+                                                         wpTypeNode,
+                                                         wpID) != null) {
                         interestManager.removeItem(interestGroup.interestGroupPubsubService,
-                            wpTypeNode,
-                            wpID);
+                                                   wpTypeNode,
+                                                   wpID);
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     logger.error("deleteWorkProduct: [" + wpID + "]: " + e.getMessage());
                 }
             }
@@ -356,70 +338,12 @@ public class InterestGroupManager {
         return Collections.unmodifiableList(failedJoins);
     }
 
-    // support for ldap and dissemination Manager
-
-    private ArrayList<String> getGroupMembers(String group) throws NamingException, SQLException {
-
-        // Set up the environment for creating the initial context
-        Hashtable env = new Hashtable(11);
-        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, "ldap://localhost:389/dc=uicds,dc=us");
-        if (username != null) {
-            env.put(Context.SECURITY_PRINCIPAL, username);
-        } else {
-            env.put(Context.SECURITY_PRINCIPAL, "cn=\"Directory Manager\"");
-        }
-        if (password != null) {
-            env.put(Context.SECURITY_CREDENTIALS, password);
-        } else {
-            env.put(Context.SECURITY_CREDENTIALS, "password");
-        }
-
-        ArrayList<String> membersArray = new ArrayList<String>();
-
-        try {
-            // Create initial context
-            DirContext ctx = new InitialDirContext(env);
-
-            String searchFilter = "(cn=" + group + ")";
-
-            SearchControls searchControls = new SearchControls();
-            searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            String[] attrsFilter = {
-                "uniqueMember"
-            };
-            searchControls.setReturningAttributes(attrsFilter);
-
-            NamingEnumeration<SearchResult> results = ctx.search("", searchFilter, searchControls);
-
-            SearchResult searchResult = null;
-
-            Matcher matcher = null;
-            while (results.hasMoreElements()) {
-                searchResult = results.nextElement();
-                Attribute members = searchResult.getAttributes().get("uniqueMember");
-                for (int i = 0; i < members.size(); i++) {
-                    matcher = commonNamePattern.matcher(members.get(i).toString());
-                    if (matcher.find()) {
-                        membersArray.add(matcher.group(1));
-                    }
-                }
-            }
-
-            // Close the context when we're done
-            ctx.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return membersArray;
-
-    }
-
     public Map<String, InterestGroup> getInterestGroupList() {
 
         return Collections.unmodifiableMap(ownedInterestGroups);
     }
+
+    // support for ldap and dissemination Manager
 
     public InterestManager getInterestManager() {
 
@@ -448,8 +372,13 @@ public class InterestGroupManager {
 
     private synchronized List<String> getJoiningCoresList(String interestGroupID) {
 
-        List<String> coreList = joiningCores.get(interestGroupID);
+        final List<String> coreList = joiningCores.get(interestGroupID);
         return coreList == null ? null : Collections.unmodifiableList(coreList);
+    }
+
+    public LdapUtil getLdapUtil() {
+
+        return ldapUtil;
     }
 
     public InterestGroup getOwnedInterestGroup(String interestGroupID) {
@@ -475,58 +404,50 @@ public class InterestGroupManager {
     public String getWorkProduct(String interestGroupID, String wpID)
         throws IllegalArgumentException {
 
-        InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
+        final InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
 
         logger.info("getWorkProduct for interestGroupID=" + interestGroupID + " wpID=" + wpID);
 
         String wp = null;
         if (interestGroup != null) {
             wp = interestManager.retrieveNodeItem(interestGroup.interestGroupPubsubService,
-                interestGroup.interestGroupNode,
-                wpID);
+                                                  interestGroup.interestGroupNode,
+                                                  wpID);
         } else {
             logger.error("Unable to find interestGroup:[" + interestGroupID + "] in map");
             throw new IllegalArgumentException("getWorkProduct: unable to find interestGroup " +
-                                               interestGroupID + " in map", null);
+                interestGroupID + " in map", null);
         }
         return wp;
     }
 
     public void handleNewInterestGroup(String interestGroupID) {
 
-        try {
-            logger.debug("handleNewInterestGroup: received notification of joined interest group id=" +
-                         interestGroupID);
-            DisseminationManagerMessage dissMsg = new DisseminationManagerMessage();
+        logger.debug("handleNewInterestGroup: received notification of joined interest group id=" +
+            interestGroupID);
+        final DisseminationManagerMessage dissMsg = new DisseminationManagerMessage();
 
-            // set the interest group ID
-            dissMsg.setInterestGroupID(interestGroupID);
+        // set the interest group ID
+        dissMsg.setInterestGroupID(interestGroupID);
 
-            // Share to everyone
-            ArrayList<String> groupJids = getGroupMembers("uicds-users");
-            for (String jid : groupJids) {
-                if (!dissMsg.getJidsToAdd().contains(jid)) {
-                    dissMsg.addJID(jid);
-                }
+        // Share to everyone
+        ArrayList<String> groupJids = getLdapUtil().getGroupMembersForUsers();
+        for (final String jid : groupJids) {
+            if (!dissMsg.getJidsToAdd().contains(jid)) {
+                dissMsg.addJID(jid);
             }
+        }
 
-            // Share to uicds-admin group as well
-            groupJids = getGroupMembers("uicds-admin");
-            for (String jid : groupJids) {
-                if (!dissMsg.getJidsToAdd().contains(jid)) {
-                    dissMsg.addJID(jid);
-                }
+        // Share to uicds-admin group as well
+        groupJids = getLdapUtil().getGroupMembersForAdmins();
+        for (final String jid : groupJids) {
+            if (!dissMsg.getJidsToAdd().contains(jid)) {
+                dissMsg.addJID(jid);
             }
+        }
 
-            Message<DisseminationManagerMessage> message = new GenericMessage<DisseminationManagerMessage>(dissMsg);
-            disseminationManagerChannel.send(message);
-
-        } catch (NamingException ex) {
-            java.util.logging.Logger.getLogger(InterestGrpGMgmtIQListener.class.getName()).log(Level.SEVERE,
-                null,
-                ex);
-        } catch (SQLException ex) {}
-
+        final Message<DisseminationManagerMessage> message = new GenericMessage<DisseminationManagerMessage>(dissMsg);
+        disseminationManagerChannel.send(message);
     }
 
     @PostConstruct
@@ -537,11 +458,11 @@ public class InterestGroupManager {
         assert interestManager != null;
 
         interestManager.addIQListener(new InterestGrpGMgmtIQListener(this),
-            new IQNamespacePacketFilter(InterestGrptManagementIQFactory.namespace));
+                                      new IQNamespacePacketFilter(InterestGrptManagementIQFactory.namespace));
 
         interestManager.addMessageListener(new InterestGrpMgmtEventListener(this),
-            new PacketExtensionFilter(InterestGrpManagementEventFactory.ELEMENT_NAME,
-                                      InterestGrpManagementEventFactory.NAMESPACE));
+                                           new PacketExtensionFilter(InterestGrpManagementEventFactory.ELEMENT_NAME,
+                                                                     InterestGrpManagementEventFactory.NAMESPACE));
 
         createInterestGroupRoot();
 
@@ -557,7 +478,7 @@ public class InterestGroupManager {
 
     public boolean interestGroupExists(String interestGroupID) {
 
-        InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
+        final InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
         return interestGroup != null;
     }
 
@@ -565,7 +486,7 @@ public class InterestGroupManager {
         throws IllegalArgumentException {
 
         boolean found = false;
-        if (interestGroupID != null && joiningCores.containsKey(interestGroupID)) {
+        if ((interestGroupID != null) && joiningCores.containsKey(interestGroupID)) {
             if (getJoiningCoresList(interestGroupID).contains(coreName)) {
                 found = true;
             }
@@ -586,7 +507,7 @@ public class InterestGroupManager {
     public synchronized boolean isInterestGroupJoined(String joinedkey) {
 
         return joinedInterestGroups.containsKey(joinedkey) &&
-               joinedInterestGroups.get(joinedkey) != null;
+            (joinedInterestGroups.get(joinedkey) != null);
     }
 
     /**
@@ -598,7 +519,7 @@ public class InterestGroupManager {
      */
     public synchronized boolean isInterestGroupOwned(String uuid) {
 
-        return ownedInterestGroups.containsKey(uuid) && ownedInterestGroups.get(uuid) != null;
+        return ownedInterestGroups.containsKey(uuid) && (ownedInterestGroups.get(uuid) != null);
     }
 
     /**
@@ -626,7 +547,7 @@ public class InterestGroupManager {
         // Don't join if we own it or are already joined
         // TODO: Is the core JID in the joinedKey really needed ????
         // String joinedKey = interestGroup.interestGroupID + "." + coreConnection.getJID();
-        String joinedKey = interestGroup.interestGroupID;
+        final String joinedKey = interestGroup.interestGroupID;
         if (!isInterestGroupOwned(interestGroup.interestGroupID) &&
             !isInterestGroupJoined(joinedKey)) {
 
@@ -648,22 +569,22 @@ public class InterestGroupManager {
             interestManager.addNodeManager(interestGroup.interestGroupPubsubService);
 
             // subscribe to the child nodes (specified workProductType's) at the owning core
-            for (String wpType : interestGroup.workProductTypes) {
-                String wpTypeNode = wpType + "_" + interestGroup.interestGroupID;
+            for (final String wpType : interestGroup.workProductTypes) {
+                final String wpTypeNode = wpType + "_" + interestGroup.interestGroupID;
                 logger.debug("joinInterestGroup - subscribing to node:" + wpTypeNode);
                 try {
                     interestManager.subscribeToNode(interestGroup.interestGroupPubsubService,
-                        wpTypeNode);
-                } catch (XMPPException e) {
+                                                    wpTypeNode);
+                } catch (final XMPPException e) {
                     logger.error("joinInterestGroup: Error subscribing to owner's node " +
-                                 wpTypeNode);
+                        wpTypeNode);
                     joinedInterestGroups.remove(joinedKey);
                     interestGroup.interestGroupInfo = interestGroupInfo;
                     addToFailedJoins(interestGroup);
                     throw e;
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     logger.error("joinInterestGroup: Error subscribing to owner's node " +
-                                 wpTypeNode);
+                        wpTypeNode);
                     joinedInterestGroups.remove(joinedKey);
                     interestGroup.interestGroupInfo = interestGroupInfo;
                     addToFailedJoins(interestGroup);
@@ -676,23 +597,23 @@ public class InterestGroupManager {
 
             // Tell COMMS about the new interestGroup here
             logger.debug("joinInterestGroup - notify Comms of joined interest group id=" +
-                         interestGroup.interestGroupID);
-            JoinedInterestGroupNotificationMessage joinedInterestGroupMessage = new JoinedInterestGroupNotificationMessage();
+                interestGroup.interestGroupID);
+            final JoinedInterestGroupNotificationMessage joinedInterestGroupMessage = new JoinedInterestGroupNotificationMessage();
             joinedInterestGroupMessage.setInterestGroupID(interestGroup.interestGroupID);
             joinedInterestGroupMessage.setOwner(interestGroup.interestGroupOwner);
             joinedInterestGroupMessage.setOwnerProperties(xmlPropsStr);
             joinedInterestGroupMessage.setInterestGroupType(interestGroup.interestGroupType);
             joinedInterestGroupMessage.setInterestGroupInfo(interestGroupInfo);
             joinedInterestGroupMessage.setJoinedWPTypes(interestGroup.workProductTypes);
-            Message<JoinedInterestGroupNotificationMessage> notification = new GenericMessage<JoinedInterestGroupNotificationMessage>(joinedInterestGroupMessage);
+            final Message<JoinedInterestGroupNotificationMessage> notification = new GenericMessage<JoinedInterestGroupNotificationMessage>(joinedInterestGroupMessage);
             joinedInterestGroupNotificationChannel.send(notification);
 
             joined = true;
 
         } else if (isInterestGroupOwned(interestGroup.interestGroupID)) {
             throw new IllegalArgumentException("InterestGroupManager:joinInterestGroup trying to join " +
-                                               interestGroup.interestGroupID +
-                                               " but this core owns it");
+                interestGroup.interestGroupID +
+                " but this core owns it");
         } else if (isInterestGroupJoined(joinedKey)) {
             logger.error("Requested to join an interest group that is already joined to.");
         }
@@ -700,54 +621,45 @@ public class InterestGroupManager {
         return joined;
     }
 
-    // public void publishInterestGroup(String interestGroupID, String interestGroupWPID,
-    // String interestGroupWP, String productIDs[]) {
-    // InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
-    // if (interestGroup != null) {
-    // interestGroup.workProductIDs = productIDs;
-    // }
-    // publishWorkProduct(interestGroupID, interestGroupWPID, interestGroupWP);
-    // }
-
     public void publishWorkProduct(String interestGroupID, String wpID, String wpType, String wp) {
 
         logger.debug("publishWorkProduct: interestGroupID=" + interestGroupID + "  wpID=" + wpID +
                      " wpType=" + wpType);
 
-        InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
+        final InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
 
         if (interestGroup != null) {
-            String wpTypeNode = wpType + "_" + interestGroupID;
+            final String wpTypeNode = wpType + "_" + interestGroupID;
 
             if (interestGroup.workProductTypes.contains(wpType)) {
                 // remove work product publication first if it exists in case this is an update
                 try {
                     if (interestManager.retrieveNodeItem(interestGroup.interestGroupPubsubService,
-                        wpTypeNode,
-                        wpID) != null) {
+                                                         wpTypeNode,
+                                                         wpID) != null) {
                         try {
                             interestManager.removeItem(interestGroup.interestGroupPubsubService,
-                                wpTypeNode,
-                                wpID);
-                        } catch (Exception e) {
+                                                       wpTypeNode,
+                                                       wpID);
+                        } catch (final Exception e) {
                             logger.error("publishWorkProduct: removeItem: productID: " + wpID +
                                          ": " + e.getMessage());
                         }
                     } else {
                         logger.debug("publishWorkProduct: productID: " + wpID + " not existed");
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     logger.error("publishWorkProduct: retrieveNodeItem: productID: " + wpID + ": " +
-                                 e.getMessage());
+                        e.getMessage());
                     return;
                 }
             } else {
                 // create a new product type node
                 interestManager.addNode(interestGroup.interestGroupPubsubService,
-                    interestGroup.interestGroupNode,
-                    wpTypeNode,
-                    NODE_ITEM_TYPE.ITEM_LIST,
-                    "");
+                                        interestGroup.interestGroupNode,
+                                        wpTypeNode,
+                                        NODE_ITEM_TYPE.ITEM_LIST,
+                                        "");
 
                 // update the subscription map
                 interestManager.updateSubscriptionMap(interestGroup.interestGroupPubsubService);
@@ -759,35 +671,43 @@ public class InterestGroupManager {
                 // Note: this is needed since we no longer subscribe to the incident node (conflict
                 // error), but to all product types
                 // This will not be needed if the conflict error is resolved
-                Set<String> joinedCoreJIDs = interestGroup.joinedCoreJIDMap.keySet();
-                for (String joinedCoreJID : joinedCoreJIDs) {
+                final Set<String> joinedCoreJIDs = interestGroup.joinedCoreJIDMap.keySet();
+                for (final String joinedCoreJID : joinedCoreJIDs) {
                     if (interestGroup.joinedCoreJIDMap.get(joinedCoreJID) == true) {
                         logger.debug("publishWorkProduct: remoteCoreJID: " +
-                                     joinedCoreJID +
-                                     " is " +
-                                     (getCoreConnection().isCoreOnline(joinedCoreJID) ? " online"
-                                                                                     : "offline"));
+                            joinedCoreJID +
+                            " is " +
+                            (getCoreConnection().isCoreOnline(joinedCoreJID) ? " online" : "offline"));
                         // this incident was shared for all work product types with the joined core
                         interestManager.sendUpdateJoinMessage(joinedCoreJID,
-                            interestGroupID,
-                            wpType);
+                                                              interestGroupID,
+                                                              wpType);
                     }
                 }
             }
 
-            String xmlItem = PubSubIQFactory.createItemXML(wp, wpID);
+            final String xmlItem = PubSubIQFactory.createItemXML(wp, wpID);
             // publish interest group work product to node
             // log.debug("publishWorkProduct: publish [" + xmlItem + "] to node " + wpTypeNode);
 
             interestManager.publishToNode(interestGroup.interestGroupPubsubService,
-                wpTypeNode,
-                xmlItem);
+                                          wpTypeNode,
+                                          xmlItem);
 
         } else {
             logger.error("Unable to find interestGroup:[" + interestGroupID + "] in map");
             // throw exception
         }
     }
+
+    // public void publishInterestGroup(String interestGroupID, String interestGroupWPID,
+    // String interestGroupWP, String productIDs[]) {
+    // InterestGroup interestGroup = ownedInterestGroups.get(interestGroupID);
+    // if (interestGroup != null) {
+    // interestGroup.workProductIDs = productIDs;
+    // }
+    // publishWorkProduct(interestGroupID, interestGroupWPID, interestGroupWP);
+    // }
 
     public synchronized void removeAllFromFailedJoins(ArrayList<InterestGroup> groupsToRemove) {
 
@@ -813,12 +733,12 @@ public class InterestGroupManager {
                                             String product) {
 
         interestManager.sendJoinedPublishProductRequestMessage(interestGroupID,
-            owningCore,
-            productId,
-            productType,
-            act,
-            userID,
-            product);
+                                                               owningCore,
+                                                               productId,
+                                                               productType,
+                                                               act,
+                                                               userID,
+                                                               product);
     }
 
     /**
@@ -842,21 +762,21 @@ public class InterestGroupManager {
                                         String xml) throws IllegalArgumentException {
 
         // Make sure the interest group name is not empty or null
-        if (interestGroupID == null || interestGroupID.length() == 0) {
+        if ((interestGroupID == null) || (interestGroupID.length() == 0)) {
             throw new IllegalArgumentException("InterestGroup UUID cannot be empty");
         }
 
-        InterestGroup interestGroup = joinedInterestGroups.get(interestGroupID);
+        final InterestGroup interestGroup = joinedInterestGroups.get(interestGroupID);
         if (interestGroup == null) {
             throw new IllegalArgumentException("InterestGroup with uuid " + interestGroupID +
-                                               " not found.");
+                " not found.");
         }
 
         logger.info("resignFromInterestGroup resigning from interest group ID=" + interestGroupID);
 
         // Unsubscribe to all nodes for this interest group
         interestManager.unsubscribeAllForInterestGroup(interestGroup.interestGroupPubsubService,
-            interestGroupID);
+                                                       interestGroupID);
 
         // remove from mangement
         synchronized (this) {
@@ -865,10 +785,10 @@ public class InterestGroupManager {
 
         // Let owner know that we have resigned
         // (String owningJID, String uuid)
-        IQ msg = InterestGrptManagementIQFactory.createResignConfirmMessage(to, packetId, xml);
+        final IQ msg = InterestGrptManagementIQFactory.createResignConfirmMessage(to, packetId, xml);
         try {
             coreConnection.sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("Error sending resign from interest group message: " + e.getMessage());
             logger.debug("resignFromInterestGroup message: " + msg.toXML());
         }
@@ -895,20 +815,20 @@ public class InterestGroupManager {
 
                 interestManager.addNodeManager(interestGroup.interestGroupPubsubService);
 
-                for (String wpType : interestGroup.workProductTypes) {
+                for (final String wpType : interestGroup.workProductTypes) {
                     wpTypeNode = wpType + "_" + interestGroup.interestGroupID;
                     logger.debug("restoreJoinedInterestGroup - subscribing to node:" + wpTypeNode);
                     interestManager.subscribeToNode(interestGroup.interestGroupPubsubService,
-                        wpTypeNode);
+                                                    wpTypeNode);
                 }
 
                 // Add the joined interest group
                 interestGroup.state = CORE_STATUS.JOINED;
-                String joinedKey = interestGroup.interestGroupID;
+                final String joinedKey = interestGroup.interestGroupID;
                 joinedInterestGroups.put(joinedKey, interestGroup);
-            } catch (XMPPException e) {
+            } catch (final XMPPException e) {
                 logger.error("restoreInterestGroup: error subscribing to ownner's node " +
-                             wpTypeNode);
+                    wpTypeNode);
                 if (e.getXMPPError() != null) {
                     logger.error("  message: " + e.getXMPPError().getMessage());
                     logger.error("     code: " + e.getXMPPError().getCode());
@@ -919,9 +839,9 @@ public class InterestGroupManager {
                 }
                 connectionRestoreSuccessful = false;
 
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 logger.error("restoreInterestGroup: error subscribing to owner's node " +
-                             wpTypeNode);
+                    wpTypeNode);
                 e.printStackTrace();
                 connectionRestoreSuccessful = false;
             }
@@ -929,9 +849,9 @@ public class InterestGroupManager {
                 // notify InterestGroupManagementComponent to delete the restored interest
                 // group since we can't subscribe, i.e. the
                 // interest group may have been deleted when we were down
-                DeleteJoinedInterestGroupMessage message = new DeleteJoinedInterestGroupMessage();
+                final DeleteJoinedInterestGroupMessage message = new DeleteJoinedInterestGroupMessage();
                 message.setInterestGroupID(interestGroup.interestGroupID);
-                Message<DeleteJoinedInterestGroupMessage> notification = new GenericMessage<DeleteJoinedInterestGroupMessage>(message);
+                final Message<DeleteJoinedInterestGroupMessage> notification = new GenericMessage<DeleteJoinedInterestGroupMessage>(message);
                 deleteJoinedInterestGroupNotificationChannel.send(notification);
             }
         }
@@ -963,10 +883,10 @@ public class InterestGroupManager {
             // RDW - need to figure out what to do when the return from addFolder is null
             // i.e. the creation of the node failed.
             if (interestManager.addFolder(interestGroup.interestGroupPubsubService,
-                coreConnection.getInterestGroupRoot(),
-                interestGroup.interestGroupNode) == null) {
+                                          coreConnection.getInterestGroupRoot(),
+                                          interestGroup.interestGroupNode) == null) {
                 logger.error("cannot create node for restored owned interest group: " +
-                             interestGroup.interestGroupNode);
+                    interestGroup.interestGroupNode);
             }
 
             // update the subscription map
@@ -999,15 +919,15 @@ public class InterestGroupManager {
             // RDW - need to figure out what to do when the return from addFolder is null
             // i.e. the creation of the node failed.
             interestManager.addFolder(interestGroup.interestGroupPubsubService,
-                coreConnection.getInterestGroupRoot(),
-                interestGroup.interestGroupNode);
+                                      coreConnection.getInterestGroupRoot(),
+                                      interestGroup.interestGroupNode);
 
             // update the subscription map
             interestManager.updateSubscriptionMap(interestGroup.interestGroupPubsubService);
 
             synchronized (this) {
-                for (String joinedCore : sharedCoreList) {
-                    List<String> joiningCoreList = getJoiningCoresList(interestGroup.interestGroupID);
+                for (final String joinedCore : sharedCoreList) {
+                    final List<String> joiningCoreList = getJoiningCoresList(interestGroup.interestGroupID);
                     if (joiningCoreList != null) {
                         addToJoiningCoresList(interestGroup);
                     }
@@ -1024,15 +944,15 @@ public class InterestGroupManager {
 
     public void retryFailedJoins() {
 
-        ArrayList<InterestGroup> successfulJoins = new ArrayList<InterestGroup>();
-        List<InterestGroup> failures = getFailedJoins();
-        if (failures != null && failures.size() > 0) {
-            for (InterestGroup ig : failures) {
+        final ArrayList<InterestGroup> successfulJoins = new ArrayList<InterestGroup>();
+        final List<InterestGroup> failures = getFailedJoins();
+        if ((failures != null) && (failures.size() > 0)) {
+            for (final InterestGroup ig : failures) {
                 logger.info("Retrying failed join to " + ig.interestGroupID);
                 try {
                     joinInterestGroup(ig, "", ig.interestGroupInfo);
                     successfulJoins.add(ig);
-                } catch (XMPPException e) {
+                } catch (final XMPPException e) {
                     logger.error("Error retrying join for " + ig.interestGroupID);
                 }
             }
@@ -1045,7 +965,7 @@ public class InterestGroupManager {
     public void sendProductPublicationStatus(String requestingCore, String userID, String status) {
 
         logger.debug("sendProductPublicationStatus: coreJID: " + requestingCore + ", userID: " +
-                     userID + ", status: " + status);
+            userID + ", status: " + status);
         interestManager.sendProductPublicationStatusMessage(requestingCore, userID, status);
     }
 
@@ -1089,19 +1009,14 @@ public class InterestGroupManager {
         this.joinedPublishProductNotificationChannel = joinedPublishProductNotificationChannel;
     }
 
-    public void setPassword(String password) {
+    public void setLdapUtil(LdapUtil ldapUtil) {
 
-        this.password = password;
+        this.ldapUtil = ldapUtil;
     }
 
     public void setProductPublicationStatusNotificationChannel(MessageChannel productPublicationStatusNotificationChannel) {
 
         this.productPublicationStatusNotificationChannel = productPublicationStatusNotificationChannel;
-    }
-
-    public void setUsername(String username) {
-
-        this.username = username;
     }
 
     public void shareInterestGroup(ShareInterestGroupMessage message)
@@ -1110,16 +1025,16 @@ public class InterestGroupManager {
         logger.info("shareInterestGroup: interestGroupID: " + message.getInterestGroupID() +
                     " with remoteCoreJID: " + message.getRemoteCore());
 
-        for (String workProductType : message.getWorkProductTypesToShare()) {
+        for (final String workProductType : message.getWorkProductTypesToShare()) {
             logger.info("shareInterestGroup: type:" + workProductType);
         }
 
-        InterestGroup interestGroup = ownedInterestGroups.get(message.getInterestGroupID());
-        List<String> joiningCoreList = getJoiningCoresList(message.getInterestGroupID());
+        final InterestGroup interestGroup = ownedInterestGroups.get(message.getInterestGroupID());
+        final List<String> joiningCoreList = getJoiningCoresList(message.getInterestGroupID());
 
         if (interestGroup != null) {
             logger.debug("remoteCore in joiningCores: " +
-                         joiningCoreList.contains(message.getRemoteCore()));
+                joiningCoreList.contains(message.getRemoteCore()));
             logger.debug("interestGroupState: " + interestGroup.state);
         } else {
             logger.error("null interestGroup");
@@ -1127,9 +1042,9 @@ public class InterestGroupManager {
 
         if (interestGroup == null) {
             logger.error("shareInterestGroup: Unable to find interestGroup:[" +
-                         message.getInterestGroupID() + "] in ownedInterestGroups map");
+                message.getInterestGroupID() + "] in ownedInterestGroups map");
             throw new IllegalArgumentException("shareInterestGroup: unable to find: " +
-                                               message.getInterestGroupID() + " in map", null);
+                message.getInterestGroupID() + " in map", null);
         }
 
         if (joiningCoreList == null) {
@@ -1137,13 +1052,12 @@ public class InterestGroupManager {
             return;
         }
 
-        if (joiningCoreList.contains(message.getRemoteCore()) == false ||
-            interestGroup.state != CORE_STATUS.JOINED &&
-            interestGroup.state != CORE_STATUS.JOIN_IN_PROGRESS) {
+        if ((joiningCoreList.contains(message.getRemoteCore()) == false) ||
+            ((interestGroup.state != CORE_STATUS.JOINED) && (interestGroup.state != CORE_STATUS.JOIN_IN_PROGRESS))) {
 
             if (coreConnection.isCoreOnline(message.getRemoteCore()) == false) {
                 logger.warn("shareInterestGroup: remoteJID: " + message.getRemoteCore() +
-                            " is offline, queue the request \n");
+                    " is offline, queue the request \n");
                 // String messageString = SerializerUtil.serialize(message);
                 // getQueuedMessageDAO().saveMessage(message.getRemoteCore(), messageString);
                 return;
@@ -1159,20 +1073,20 @@ public class InterestGroupManager {
                 // tell remote core to subscribe to all types
                 shareAllTypes = true;
                 logger.debug("shareInterestGroup: share all wpTypes");
-                for (String wpType : interestGroup.workProductTypes) {
+                for (final String wpType : interestGroup.workProductTypes) {
                     message.getWorkProductTypesToShare().add(wpType);
                 }
             } else {
                 // verify that all the specified product types have been received for the
                 // interest group
                 shareAllTypes = false;
-                for (String wpType : message.getWorkProductTypesToShare()) {
+                for (final String wpType : message.getWorkProductTypesToShare()) {
                     if (!interestGroup.workProductTypes.contains(wpType)) {
                         throw new IllegalArgumentException("shareInterestGroup: unknown specified to-share work product  type : " +
-                                                               wpType +
-                                                               " for interest group " +
-                                                               message.getInterestGroupID(),
-                                                           null);
+                            wpType +
+                            " for interest group " +
+                            message.getInterestGroupID(),
+                            null);
                     }
                 }
             }
@@ -1181,15 +1095,15 @@ public class InterestGroupManager {
             addJoiningCoreToInterestGroup(interestGroup, message.getRemoteCore());
 
             logger.debug("===> sending join message with types to share:");
-            for (String workProductType : message.getWorkProductTypesToShare()) {
+            for (final String workProductType : message.getWorkProductTypesToShare()) {
                 logger.info("===> type:" + workProductType);
             }
 
             // log.info("shareInterestGroup - call sendJoinMessage");
             interestManager.sendJoinMessage(message.getRemoteCore(),
-                interestGroup,
-                message.getInterestGroupInfo(),
-                message.getWorkProductTypesToShare());
+                                            interestGroup,
+                                            message.getInterestGroupInfo(),
+                                            message.getWorkProductTypesToShare());
 
             interestGroup.joinedCoreJIDMap.put(message.getRemoteCore(), shareAllTypes);
         }
@@ -1198,11 +1112,11 @@ public class InterestGroupManager {
     public void unJoinedCore(String joinedCoreName) {
 
         logger.debug("unJoinedCore: " + joinedCoreName);
-        Collection<InterestGroup> interestGroups = ownedInterestGroups.values();
-        for (InterestGroup interestGroup : interestGroups) {
-            boolean shared = interestGroup.joinedCoreJIDMap.remove(joinedCoreName);
+        final Collection<InterestGroup> interestGroups = ownedInterestGroups.values();
+        for (final InterestGroup interestGroup : interestGroups) {
+            final boolean shared = interestGroup.joinedCoreJIDMap.remove(joinedCoreName);
             logger.debug("unJoinedCore: IGID: " + interestGroup.interestGroupID + " does " +
-                         (shared ? "" : "NOT") + " shared with " + joinedCoreName);
+                (shared ? "" : "NOT") + " shared with " + joinedCoreName);
         }
     }
 
@@ -1210,18 +1124,18 @@ public class InterestGroupManager {
 
         logger.info("updateJoinInterestGroup " + interestGroupID);
 
-        InterestGroup interestGroup = joinedInterestGroups.get(interestGroupID);
+        final InterestGroup interestGroup = joinedInterestGroups.get(interestGroupID);
         if (interestGroup != null) {
-            String wpTypeNode = productType + "_" + interestGroup.interestGroupID;
+            final String wpTypeNode = productType + "_" + interestGroup.interestGroupID;
             try {
                 // InterestManager ownerIM = getOwnerInterestManager(interestGroup.ownerProps);
                 // ownerIM.subscribeToOwnersNode(wpTypeNode, interestGroup.ownerProps);
                 // RDW
                 interestManager.subscribeToNode(interestGroup.interestGroupPubsubService,
-                    wpTypeNode);
-            } catch (Exception e) {
+                                                wpTypeNode);
+            } catch (final Exception e) {
                 logger.error("updateJoinInterestGroup: Error subscribing to owner's node " +
-                             wpTypeNode);
+                    wpTypeNode);
                 return;
             }
             interestGroup.workProductTypes.add(productType);

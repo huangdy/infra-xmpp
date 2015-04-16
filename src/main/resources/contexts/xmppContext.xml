@@ -67,9 +67,7 @@
         <property name="disseminationManagerChannel" ref="disseminationManagerChannel" />
         <property name="coreConnection" ref="coreConnection" />
         <property name="interestManager" ref="interestManager" />
-        <property name="password">
-            <value>${ldap.password}</value>
-        </property>
+        <property name="ldapUtil" ref="ldapUtil" />
     </bean>
 
     <bean id="communicationsServiceXmpp"

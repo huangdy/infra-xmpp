@@ -21,7 +21,8 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.communications.CoreConnec
 public class PingManager {
 
     // private final static String Logger logger = LoggerFactor
-    private class PingPacketListener implements PacketListener {
+    private class PingPacketListener
+    implements PacketListener {
 
         private final CoreConnection coreConnection;
         private final String localJID;
@@ -29,7 +30,8 @@ public class PingManager {
         public PingPacketListener(CoreConnection coreConnection) {
 
             this.coreConnection = coreConnection;
-            localJID = this.coreConnection.getJID().replaceAll("uicds@", "");
+            // TODO We shall use environment variable instead of hard-coded xmpp username: xchangecore and/or uicds
+            localJID = this.coreConnection.getJID().replaceAll("xchangecore@", "");
         }
 
         @Override
@@ -38,18 +40,19 @@ public class PingManager {
             // logger.debug("processPacket: received [" + packet.getFrom() + "] -> [" +
             // packet.getTo() + "]");
             if (packet.getFrom().contains(localJID)) {
-                logger.warn("processPacket: received [" + packet.getFrom() + "] -> ["
-                        + packet.getTo() + "]");
+                logger.warn("processPacket: received [" + packet.getFrom() + "] -> [" +
+                    packet.getTo() + "]");
                 return;
             }
-            Pong pong = new Pong(packet);
+            final Pong pong = new Pong(packet);
             // logger.debug("processPacket: send [" + pong.getFrom() + "] -> [" + pong.getTo() +
             // "]");
             coreConnection.sendPacket(pong);
         }
     }
 
-    private class PingTasker implements Runnable {
+    private class PingTasker
+    implements Runnable {
 
         private final Logger logger = LoggerFactory.getLogger(PingTasker.class);
         private final String remoteJID;
@@ -59,8 +62,8 @@ public class PingManager {
 
         PingTasker(String remoteJID, int delay) {
 
-            logger.debug("create PinkTasker for " + remoteJID + " with interval: " + interval
-                    + " seconds");
+            logger.debug("create PinkTasker for " + remoteJID + " with interval: " + interval +
+                " seconds");
             this.remoteJID = remoteJID;
             this.delay = delay;
         }
@@ -73,7 +76,7 @@ public class PingManager {
                 // will give time to
                 // properly finish TLS negotiation and then start sending heartbeats.
                 Thread.sleep(15000);
-            } catch (InterruptedException ie) {
+            } catch (final InterruptedException ie) {
                 // Do nothing
             }
 
@@ -86,7 +89,7 @@ public class PingManager {
                 }
                 try {
                     Thread.sleep(delay * 1000);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
@@ -118,19 +121,18 @@ public class PingManager {
     public PingManager(CoreConnection coreConnection, int interval) {
 
         this.coreConnection = coreConnection;
-        ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(coreConnection
-                .getXmppConnection());
+        final ServiceDiscoveryManager sdm = ServiceDiscoveryManager.getInstanceFor(coreConnection.getXmppConnection());
         sdm.addFeature(NAMESPACE);
-        PacketFilter pingPacketFilter = new PacketTypeFilter(Ping.class);
-        coreConnection.getXmppConnection().addPacketListener(
-                new PingPacketListener(this.coreConnection), pingPacketFilter);
+        final PacketFilter pingPacketFilter = new PacketTypeFilter(Ping.class);
+        coreConnection.getXmppConnection().addPacketListener(new PingPacketListener(this.coreConnection),
+                                                             pingPacketFilter);
         this.interval = interval;
     }
 
     public void addRoster(String remoteJID) {
 
-        PingTasker pingTasker = new PingTasker(remoteJID, interval);
-        Thread pintThread = new Thread(pingTasker);
+        final PingTasker pingTasker = new PingTasker(remoteJID, interval);
+        final Thread pintThread = new Thread(pingTasker);
         pintThread.setDaemon(true);
         pintThread.setName("PingTasker: [" + remoteJID + "]");
         pintThread.start();
@@ -142,31 +144,30 @@ public class PingManager {
 
         boolean status;
 
-        Ping ping = new Ping(coreConnection.getJID(), remoteJID);
+        final Ping ping = new Ping(coreConnection.getJID(), remoteJID);
         // logger.debug("ping: [" + remoteJID + "]");
 
-        PacketCollector collector = coreConnection.createPacketCollector(new PacketIDFilter(ping
-                .getPacketID()));
+        final PacketCollector collector = coreConnection.createPacketCollector(new PacketIDFilter(ping.getPacketID()));
         coreConnection.sendPacket(ping);
-        IQ result = (IQ) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
+        final IQ result = (IQ) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
         collector.cancel();
 
-        status = result == null || result.getType() == IQ.Type.ERROR ? false : true;
-        if (result != null && result.getType() == IQ.Type.ERROR) {
+        status = (result == null) || (result.getType() == IQ.Type.ERROR) ? false : true;
+        if ((result != null) && (result.getType() == IQ.Type.ERROR)) {
             // A Error response is as good as a pong response
-            logger.debug("ping: " + remoteJID + ", error code: " + result.getError().getCode()
-                    + ", condition: " + result.getError().getCondition());
+            logger.debug("ping: " + remoteJID + ", error code: " + result.getError().getCode() +
+                         ", condition: " + result.getError().getCondition());
         }
 
         // logger.debug("ping: " + remoteJID + " is " + (status == false ? "not" : "") +
         // " available ...");
         if (status != isConnected) {
-            logger.debug("ping: status changed for [" + remoteJID + "]: previous status: "
-                    + (isConnected ? "available" : "unavailable") + ", new status: "
-                    + (status ? "available" : "unavailable"));
+            logger.debug("ping: status changed for [" + remoteJID + "]: previous status: " +
+                (isConnected ? "available" : "unavailable") + ", new status: " +
+                (status ? "available" : "unavailable"));
             coreConnection.resetRemoteStatus(remoteJID, status);
-            logger.debug("ping: after resetRemoteStatus: [" + remoteJID
-                    + (status ? "] available" : "] unavailable"));
+            logger.debug("ping: after resetRemoteStatus: [" + remoteJID +
+                         (status ? "] available" : "] unavailable"));
         }
 
         return status;
@@ -174,7 +175,7 @@ public class PingManager {
 
     public void removeRoster(String remoteJID) {
 
-        PingTasker t = taskerPool.remove(remoteJID);
+        final PingTasker t = taskerPool.remove(remoteJID);
         logger.debug("removeRoster: [" + remoteJID + "]");
         if (t != null) {
             t.setRunning(false);
