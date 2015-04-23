@@ -40,8 +40,6 @@ public interface CoreConnection
 
     public abstract String getJIDPlusResourceFromCoreName(String coreName);
 
-    public abstract String getName();
-
     public abstract String getPassword();
 
     public abstract String getPort();
@@ -86,8 +84,6 @@ public interface CoreConnection
     public abstract void setInterestGroupRoot(String interestGroupRoot);
 
     public abstract void setRemoteCoreMutuallyAgreed(String remoteJID, boolean isMutuallyAgreed);
-
-    public abstract void setName(String value);
 
     public abstract void setPassword(String value);
 

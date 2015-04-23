@@ -41,14 +41,6 @@
         <property name="coreLatLon">
             <value>${core.latlon}</value>
         </property>
-        <!--
-            <property name="coreConfigFile">
-            <value>${install.home.dir}\ServerApps\uicds\config\resources\config.xml</value>
-            </property>
-        -->
-        <property name="name">
-            <value>XCHANGECORE</value>
-        </property>
         <property name="resource">
             <value>CoreConnection</value>
         </property>

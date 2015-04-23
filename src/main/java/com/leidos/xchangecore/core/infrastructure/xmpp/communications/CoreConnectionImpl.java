@@ -65,7 +65,7 @@ public class CoreConnectionImpl
 
     // Properties
     private String debug = "false";
-    private String name = "Test Client";
+    private final String name = "Test Client";
     private String server = null;
     private String servername = null;
     private String port = "5222";
@@ -142,7 +142,7 @@ public class CoreConnectionImpl
     @Override
     public void addRosterEntry(String remoteJID, String name) {
 
-        ItemType subscription = rosterManager.createEntry(remoteJID, name, null);
+        final ItemType subscription = rosterManager.createEntry(remoteJID, name, null);
         logger.debug("addRosterEntry: [" + remoteJID + "]: subscription: " + subscription);
         getAgreementDAO().setRemoteCoreMutuallyAgreed(remoteJID, subscription.equals(ItemType.both));
         logger.debug("addRosterEntry: after setRemoteCoreMutuallyAgreed: " + subscription);
@@ -154,11 +154,11 @@ public class CoreConnectionImpl
 
         // Throw an exception if the packet XML is not well formed
         if (!XmppUtils.isWellFormed(packet.toXML())) {
-            XMPPError error = new XMPPError(BAD_FORMAT_CODE,
-                                            XMPPError.Type.MODIFY,
-                                            BAD_FORMAT_CONDITION,
-                                            NOT_WELLFORMED_MSG,
-                                            null);
+            final XMPPError error = new XMPPError(BAD_FORMAT_CODE,
+                XMPPError.Type.MODIFY,
+                BAD_FORMAT_CONDITION,
+                NOT_WELLFORMED_MSG,
+                null);
             throw new XMPPException(error);
         }
     }
@@ -187,13 +187,12 @@ public class CoreConnectionImpl
 
         try {
             // Set the JID for this connection
-            if (servername != null) {
+            if (servername != null)
                 jid = username + "@" + servername;
-            } else {
+            else
                 jid = username + "@" + server;
-            }
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("An error occurred reading the properties file.");
             System.exit(0);
         }
@@ -224,16 +223,15 @@ public class CoreConnectionImpl
     @Override
     public void connect() {
 
-        if (!connected) {
+        if (!connected)
             try {
                 // connect and login to server
-                logger.info("Attempting to connect: " + getName() + "\n");
                 logger.info("     server: " + getServer());
                 logger.info("       port: " + getPort());
                 logger.info("   username: " + getUsername());
                 logger.info("   resource: " + getResource());
 
-                XMPPConnection.DEBUG_ENABLED = getDebugBoolean();
+                Connection.DEBUG_ENABLED = getDebugBoolean();
 
                 config = new ConnectionConfiguration(getServer(), getPortInt());
 
@@ -242,18 +240,17 @@ public class CoreConnectionImpl
                 xmppConnection = new XMPPConnection(config);
 
                 if (getCoreLatLon() != null && getCoreLatLon().length() > 0) {
-                    String[] pos = getCoreLatLon().split("[ ,]");
+                    final String[] pos = getCoreLatLon().split("[ ,]");
                     if (pos.length == 2) {
                         logger.debug("adding geo to presence: " + getCoreLatLon());
                         // add packet interceptor
-                        PacketFilter presenceFilter = new PacketTypeFilter(Presence.class);
-                        PresenceEnrichment presenceEnrichment = new PresenceEnrichment(pos[0],
-                                                                                       pos[1]);
+                        final PacketFilter presenceFilter = new PacketTypeFilter(Presence.class);
+                        final PresenceEnrichment presenceEnrichment = new PresenceEnrichment(pos[0],
+                            pos[1]);
                         xmppConnection.addPacketInterceptor(presenceEnrichment, presenceFilter);
                     }
-                } else {
+                } else
                     logger.debug("No lat/lon configured");
-                }
 
                 logger.info("===> login as " + getUsername() + " resource=" + getResource());
                 xmppConnection.connect();
@@ -271,12 +268,10 @@ public class CoreConnectionImpl
                 if (rosterManager.getRosterNameFromJID(getJID()) != null) {
                     logger.info("====> Set connection name to " +
                                 rosterManager.getRosterNameFromJID(getJID()));
-                    setName(rosterManager.getRosterNameFromJID(getJID()));
                     logger.debug("Adding ourself: JID=" + getJID() + " name=" +
                                  rosterManager.getRosterNameFromJID(getJID()) + " to roster");
                     rosterManager.createEntry(getJID(),
-                        rosterManager.getRosterNameFromJID(getJID()),
-                        null);
+                        rosterManager.getRosterNameFromJID(getJID()), null);
                 }
 
                 logger.info("initialize PingManger ...");
@@ -290,17 +285,16 @@ public class CoreConnectionImpl
                 discoManager = ServiceDiscoveryManager.getInstanceFor(xmppConnection);
 
                 fileManager = new InterestGroupFileManager(this);
-            } catch (XMPPException e) {
+            } catch (final XMPPException e) {
                 e.printStackTrace();
                 logger.error("CoreConnection XMPPException connecting: " + e);
                 return;
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
                 logger.error("CoreConnection Exception connecting: " + e.getMessage() + " " +
                              e.toString());
                 return;
             }
-        }
     }
 
     /*
@@ -379,60 +373,54 @@ public class CoreConnectionImpl
     @Override
     public DiscoverInfo discoverNodeInfo(String node) {
 
-        if (discoManager != null) {
+        if (discoManager != null)
             try {
                 logger.debug("discoverNodeInfo: pubsbusvc: " + pubsubsvc + ", node: " + node);
                 return discoManager.discoverInfo(pubsubsvc, node);
-            } catch (XMPPException e) {
-                XMPPError err = e.getXMPPError();
+            } catch (final XMPPException e) {
+                final XMPPError err = e.getXMPPError();
                 if (err != null && err.getCode() == 404) {
-                    if (!isConnected()) {
+                    if (!isConnected())
                         logger.error("XMPP Server not found (not connected)");
-                    }
                 } else {
                     logger.error("discovering info for node " + node);
                     if (err != null) {
                         logger.error("  message: " + err.getMessage());
                         logger.error("     code: " + err.getCode());
                         logger.error("     type: " + err.getType());
-                    } else {
+                    } else
                         logger.error("  null XMPP error message");
-                    }
 
                 }
             }
-        }
         return null;
     }
 
     @Override
     public DiscoverItems discoverNodeItems(String node) {
 
-        if (discoManager != null) {
+        if (discoManager != null)
             try {
                 return discoManager.discoverItems(pubsubsvc, node);
-            } catch (XMPPException e) {
-                XMPPError err = e.getXMPPError();
+            } catch (final XMPPException e) {
+                final XMPPError err = e.getXMPPError();
                 if (err != null && err.getCode() == 404) {
-                    if (!isConnected()) {
+                    if (!isConnected())
                         logger.error("XMPP Server not found (not connected)");
-                    } else {
+                    else
                         logger.error("XMPP Server not found error. pubsub." +
                                      xmppConnection.getHost() + " may not be resolvable");
-                    }
                 } else {
                     logger.error("discovering items for node: " + node);
                     if (err != null) {
                         logger.error("  message: " + err.getMessage());
                         logger.error("     code: " + err.getCode());
                         logger.error("     type: " + err.getType());
-                    } else {
+                    } else
                         logger.error(" null XMPP error message");
-                    }
 
                 }
             }
-        }
         return null;
     }
 
@@ -466,7 +454,8 @@ public class CoreConnectionImpl
     @Override
     public String getCoreNameFromJID(String coreJID) {
 
-        return rosterManager.getRosterNameFromJID(org.jivesoftware.smack.util.StringUtils.parseBareAddress(coreJID).toLowerCase());
+        return rosterManager.getRosterNameFromJID(org.jivesoftware.smack.util.StringUtils.parseBareAddress(
+            coreJID).toLowerCase());
     }
 
     public MessageChannel getCoreStatusUpdateChannel() {
@@ -568,17 +557,6 @@ public class CoreConnectionImpl
     public String getJIDPlusResourceFromCoreName(String coreName) {
 
         return rosterManager.getJIDFromRosterName(coreName) + "/" + resource;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#getName()
-     */
-    @Override
-    public String getName() {
-
-        return name;
     }
 
     /*
@@ -759,9 +737,8 @@ public class CoreConnectionImpl
     @Override
     public boolean isCoreOnline(String coreName) {
 
-        if (coreName == null) {
+        if (coreName == null)
             return false;
-        }
         return rosterManager.isCoreOnline(coreName);
     }
 
@@ -769,7 +746,6 @@ public class CoreConnectionImpl
 
         // set the property members for the connection
         setDebug(connectionProperties.getProperty("debug"));
-        setName(connectionProperties.getProperty("name"));
         setServer(connectionProperties.getProperty("server"));
         setServername(connectionProperties.getProperty("servername"));
         setPort(connectionProperties.getProperty("port"));
@@ -804,7 +780,7 @@ public class CoreConnectionImpl
         String localhost = "";
         try {
             localhost = InetAddress.getLocalHost().getCanonicalHostName().toLowerCase();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
         return value.replace("localhost", localhost);
@@ -813,20 +789,17 @@ public class CoreConnectionImpl
     @Override
     public void resetRemoteStatus(String remoteJID, boolean isOnline) {
 
-        RosterEntry roster = getRoster().getEntry(remoteJID);
+        final RosterEntry roster = getRoster().getEntry(remoteJID);
         if (roster != null) {
-            ItemType subscription = roster.getType();
+            final ItemType subscription = roster.getType();
             if (isOnline) {
                 if (subscription.equals(ItemType.both)) {
                     logger.debug("resetRemoteStatus: set the remoteJID: " + remoteJID + " to " +
                                  (isOnline ? "available" : "unavailable"));
                     sendCoreStatusUpdate(remoteJID, "available", "", "");
                 }
-            } else {
-                if (subscription.equals(ItemType.both)) {
-                    sendCoreStatusUpdate(remoteJID, "unavailable", "", "");
-                }
-            }
+            } else if (subscription.equals(ItemType.both))
+                sendCoreStatusUpdate(remoteJID, "unavailable", "", "");
         }
         logger.debug("resetRemoteStatus: ... exit ...");
     }
@@ -840,11 +813,11 @@ public class CoreConnectionImpl
         logger.info("sendCoreStatusUpdate: JID: " + remotJID + ", status: " + coreStatus +
                     (latitude.length() > 0 ? ", " + latitude + "/" + longitude : ""));
 
-        CoreStatusUpdateMessage msg = new CoreStatusUpdateMessage(remotJID,
-                                                                  coreStatus,
-                                                                  latitude,
-                                                                  longitude);
-        Message<CoreStatusUpdateMessage> update = new GenericMessage<CoreStatusUpdateMessage>(msg);
+        final CoreStatusUpdateMessage msg = new CoreStatusUpdateMessage(remotJID,
+            coreStatus,
+            latitude,
+            longitude);
+        final Message<CoreStatusUpdateMessage> update = new GenericMessage<CoreStatusUpdateMessage>(msg);
         synchronized (this) {
             getCoreStatusUpdateChannel().send(update);
             logger.info("sendCoreStatusUpdate: ... exit ...");
@@ -854,26 +827,24 @@ public class CoreConnectionImpl
     @Override
     public void sendHeartBeat() {
 
-        if (isConnected()) {
+        if (isConnected())
             try {
                 // send a heartbeat to remote cores by updating our presence
-                Presence presence = new Presence(Type.available, "Online", 50, Mode.available);
+                final Presence presence = new Presence(Type.available, "Online", 50, Mode.available);
                 sendPacket(presence);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 if (e instanceof XMPPException) {
-                    XMPPException xe = (XMPPException) e;
+                    final XMPPException xe = (XMPPException) e;
                     logger.error("XMPPException sending heartbeat: " + xe.getMessage());
-                    XMPPError error = xe.getXMPPError();
+                    final XMPPError error = xe.getXMPPError();
                     logger.error("XMPP Error Message  : " + error.getMessage());
                     logger.error("XMPP Error Condition: " + error.getCondition());
                     logger.error("XMPP Error Type     : " + error.getType());
                     logger.error("XMPP Error Code     : " + error.getCode());
 
-                } else {
+                } else
                     logger.error("Exception sending heartbeat: " + e.getMessage());
-                }
             }
-        }
     }
 
     /*
@@ -961,9 +932,8 @@ public class CoreConnectionImpl
     @Override
     public void setDebug(String value) {
 
-        if (value != null && !value.equals(null)) {
+        if (value != null && !value.equals(null))
             debug = value;
-        }
     }
 
     /*
@@ -982,27 +952,13 @@ public class CoreConnectionImpl
     /*
      * (non-Javadoc)
      *
-     * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#setName(java.lang.String)
-     */
-    @Override
-    public void setName(String value) {
-
-        if (value != null && !value.equals(null)) {
-            name = value;
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
      * @see com.saic.dctd.uicds.xmpp.communications.CoreConnection#setPassword(java.lang.String)
      */
     @Override
     public void setPassword(String value) {
 
-        if (value != null && !value.equals(null)) {
+        if (value != null && !value.equals(null))
             password = value;
-        }
     }
 
     /*
@@ -1025,9 +981,8 @@ public class CoreConnectionImpl
     @Override
     public void setPort(String value) {
 
-        if (value != null && !value.equals(null)) {
+        if (value != null && !value.equals(null))
             port = value;
-        }
     }
 
     /*
@@ -1038,9 +993,8 @@ public class CoreConnectionImpl
     @Override
     public void setPubSubSvc(String value) {
 
-        if (value != null && !value.equals(null)) {
+        if (value != null && !value.equals(null))
             pubsubsvc = replaceHostname(value);
-        }
 
     }
 
@@ -1061,14 +1015,12 @@ public class CoreConnectionImpl
 
         if (value != null && !value.equals(null)) {
             resource = value;
-            if (servername != null) {
+            if (servername != null)
                 jidPlusResource = username + "@" + servername;
-            } else {
+            else
                 jidPlusResource = username + "@" + server;
-            }
-            if (resource != null && resource != "") {
+            if (resource != null && resource != "")
                 jidPlusResource += "/" + resource;
-            }
         }
     }
 
@@ -1088,9 +1040,8 @@ public class CoreConnectionImpl
     @Override
     public void setServer(String value) {
 
-        if (value != null && !value.equals(null)) {
+        if (value != null && !value.equals(null))
             server = replaceHostname(value);
-        }
     }
 
     /*
@@ -1101,11 +1052,8 @@ public class CoreConnectionImpl
     @Override
     public void setServername(String value) {
 
-        if (!value.equals(null)) {
-
+        if (!value.equals(null))
             servername = replaceHostname(value);
-
-        }
     }
 
     /*
@@ -1116,9 +1064,8 @@ public class CoreConnectionImpl
     @Override
     public void setUsername(String value) {
 
-        if (value != null && !value.equals(null)) {
+        if (value != null && !value.equals(null))
             username = value;
-        }
     }
 
     public void setWaitTimeInSeconds(int waitTimeInSeconds) {

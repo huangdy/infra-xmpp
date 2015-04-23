@@ -49,12 +49,12 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.PubSubEve
  */
 
 public class InterestManagerImpl
-implements InterestManager {
+    implements InterestManager {
 
     // Class to handle the pubsub event messages that are notfications of changes in
     // work products.
     protected class ListenerAdapter
-    implements PacketListener {
+        implements PacketListener {
 
         public ListenerAdapter() {
 
@@ -63,54 +63,51 @@ implements InterestManager {
         @Override
         public void processPacket(Packet packet) {
 
-            Pattern retractPattern = Pattern.compile("retract\\s+id=[\"']([\\w-]+)[\"']");
+            final Pattern retractPattern = Pattern.compile("retract\\s+id=[\"']([\\w-]+)[\"']");
 
             // TODO: this may not be the right place for this logic
-            // logger.debug("InterestManager:ListenerAdapter:processPacket: "+packet.toXML());
-            PacketExtension ext = packet.getExtension("http://jabber.org/protocol/pubsub#event");
+            logger.debug("InterestManager:ListenerAdapter:processPacket: " + packet.toXML());
+            final PacketExtension ext = packet.getExtension("http://jabber.org/protocol/pubsub#event");
             if (ext != null && ext instanceof PubSubEventExtension) {
                 // logger.debug("    GOT a PubSubEventExtension");
-                PubSubEventExtension pubsub = (PubSubEventExtension) ext;
+                final PubSubEventExtension pubsub = (PubSubEventExtension) ext;
 
                 // logger.debug("   pubsub: "+pubsub.toXML());
                 // Handle item updates
                 Iterator<com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Item> it = pubsub.getItems();
                 while (it.hasNext()) {
-                    String item = it.next().toXML();
+                    final String item = it.next().toXML();
                     // logger.debug("    ITEM: " + item);
 
                     // send out the node data to the Communications Service
-                    PublishProductMessage message = new PublishProductMessage(item,
-                        coreConnection.getServer());
-                    org.springframework.integration.Message<PublishProductMessage> notification = new GenericMessage<PublishProductMessage>(message);
+                    final PublishProductMessage message = new PublishProductMessage(item,
+                                                                                    coreConnection.getServer());
+                    final org.springframework.integration.Message<PublishProductMessage> notification = new GenericMessage<PublishProductMessage>(message);
                     if (owningCoreWorkProductNotificationChannel != null) {
                         logger.info("********** Sending product publication to CommunicationsService");
                         owningCoreWorkProductNotificationChannel.send(notification);
-                    } else {
+                    } else
                         logger.error("owningCoreWorkProductNotificationChannel is null");
-                    }
                 }
 
                 // Handle item retracts
                 it = pubsub.getRetracts();
                 while (it.hasNext()) {
-                    String xml = it.next().toXML();
-                    Matcher m = retractPattern.matcher(xml);
-                    if (!m.find()) {
+                    final String xml = it.next().toXML();
+                    final Matcher m = retractPattern.matcher(xml);
+                    if (!m.find())
                         logger.error("Retract for unknown item: " + xml);
-                    }
                 }
 
                 // Handle node deletes
                 it = pubsub.getDeletes();
                 // TODO: should we delete nodes on resign or allow joined cores to keep data?
-                while (it.hasNext()) {
+                while (it.hasNext())
                     // TODO: Do not always get the right <delete node> messages ... need more work
                     // here
                     // In the mean time, we will use implicit delete IQ to communicate node
                     // deletions
                     logger.debug("===> NODE DELETE: " + it.next().toXML());
-                }
             }
         }
     }
@@ -145,9 +142,8 @@ implements InterestManager {
     @Override
     public boolean addCollection(String pubsubService, String interestGroupRoot) {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             return nodeManagers.get(pubsubService).addCollection(interestGroupRoot);
-        }
         logger.error("No node manager for pubsub service: " + pubsubService);
         return false;
     }
@@ -162,9 +158,8 @@ implements InterestManager {
     @Override
     public String addFolder(String pubsubService, String folder, String name) {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             return nodeManagers.get(pubsubService).addFolder(folder, name);
-        }
         logger.error("No node manager for pubsub service: " + pubsubService);
         return null;
     }
@@ -179,8 +174,8 @@ implements InterestManager {
     @Override
     public void addIQListener(PacketListener listener, PacketFilter filter) {
 
-        PacketTypeFilter iqFilter = new PacketTypeFilter(IQ.class);
-        AndFilter andFilter = new AndFilter(iqFilter, filter);
+        final PacketTypeFilter iqFilter = new PacketTypeFilter(IQ.class);
+        final AndFilter andFilter = new AndFilter(iqFilter, filter);
 
         coreConnection.addPacketListener(listener, andFilter);
     }
@@ -195,8 +190,8 @@ implements InterestManager {
     @Override
     public void addMessageListener(PacketListener listener, PacketFilter filter) {
 
-        PacketTypeFilter msgFilter = new PacketTypeFilter(Message.class);
-        AndFilter andFilter = new AndFilter(msgFilter, filter);
+        final PacketTypeFilter msgFilter = new PacketTypeFilter(Message.class);
+        final AndFilter andFilter = new AndFilter(msgFilter, filter);
 
         coreConnection.addPacketListener(listener, andFilter);
     }
@@ -217,9 +212,8 @@ implements InterestManager {
                            NODE_ITEM_TYPE type,
                            String topicType) {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             return nodeManagers.get(pubsubService).addNode(folder, topic, type, topicType);
-        }
         logger.error("No node manager for pubsub service: " + pubsubService);
         return false;
     }
@@ -229,7 +223,7 @@ implements InterestManager {
 
         if (getNodeManager(pubsubService) == null) {
             // RDW should factory this for testing
-            NodeManager nodeManager = new NodeManagerImpl(coreConnection);
+            final NodeManager nodeManager = new NodeManagerImpl(coreConnection);
             nodeManager.setPubsubService(pubsubService);
             nodeManagers.put(pubsubService, nodeManager);
         }
@@ -257,9 +251,8 @@ implements InterestManager {
     public ArrayList<String> getAllNodeItems(String pubsubService, String node)
         throws IllegalArgumentException {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             return nodeManagers.get(pubsubService).getAllNodeItems(node);
-        }
         logger.error("No node manager for pubsub service: " + pubsubService);
         return new ArrayList<String>();
     }
@@ -287,9 +280,8 @@ implements InterestManager {
     @Override
     public DiscoverItems getFolderContents(String pubsubService, String interestGroupNode) {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             return nodeManagers.get(pubsubService).getChildrenNodes(interestGroupNode);
-        }
         logger.error("No node manager for pubsub service: " + pubsubService);
         return null;
     }
@@ -305,11 +297,9 @@ implements InterestManager {
     public NodeManager getNodeManager(String pubsubService) {
 
         NodeManager nodeManager = null;
-        if (pubsubService != null) {
-            if (nodeManagers.containsKey(pubsubService)) {
+        if (pubsubService != null)
+            if (nodeManagers.containsKey(pubsubService))
                 nodeManager = nodeManagers.get(pubsubService);
-            }
-        }
         return nodeManager;
     }
 
@@ -348,14 +338,12 @@ implements InterestManager {
     public void initialize() {
 
         logger.debug("Initialize called - coreConnection is initialized? " + coreConnection);
-        if (!coreConnection.isConnected()) {
+        if (!coreConnection.isConnected())
             coreConnection.initialize();
-        }
 
         // create a node manager for the main XMPP connection
-        if (nodeManagers.isEmpty()) {
+        if (nodeManagers.isEmpty())
             addNodeManager(coreConnection.getPubSubSvc());
-        }
 
         assert coreConnection != null;
 
@@ -385,9 +373,8 @@ implements InterestManager {
     @Override
     public boolean publishToNode(String pubsubService, String nodeName, String itemText) {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             return nodeManagers.get(pubsubService).publishToNode(nodeName, itemText);
-        }
         logger.error("No node manager for pubsub service: " + pubsubService);
         return false;
     }
@@ -401,11 +388,10 @@ implements InterestManager {
     @Override
     public void refreshSubscriptions(String pubsubService) {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             nodeManagers.get(pubsubService).updateSubscriptionMap();
-        } else {
+        else
             logger.error("No node manager for pubsub service: " + pubsubService);
-        }
     }
 
     /*
@@ -418,9 +404,8 @@ implements InterestManager {
     @Override
     public boolean removeItem(String pubsubService, String nodeName, String itemUUID) {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             return nodeManagers.get(pubsubService).removeItem(nodeName, itemUUID);
-        }
         logger.error("No node manager for pubsub service: " + pubsubService);
         return false;
     }
@@ -444,9 +429,8 @@ implements InterestManager {
     public boolean removeNode(String pubsubService, String node) {
 
         logger.debug("removeNode: node: " + node);
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             return nodeManagers.get(pubsubService).removeNode(node);
-        }
         logger.error("No node manager for pubsub service: " + pubsubService);
         return false;
     }
@@ -462,9 +446,8 @@ implements InterestManager {
     public boolean removeNode(String pubsubService, String folder, String topic) {
 
         logger.debug("removeNode: folder: " + folder + ", topic: " + topic);
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             return nodeManagers.get(pubsubService).removeNode(folder, topic);
-        }
         logger.error("No node manager for pubsub service: " + pubsubService);
         return false;
     }
@@ -480,9 +463,8 @@ implements InterestManager {
     public String retrieveNodeItem(String pubsubService, String node, String wpID)
         throws IllegalStateException, IllegalArgumentException {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             return nodeManagers.get(pubsubService).retrieveNodeItem(node, wpID);
-        }
         logger.error("No node manager for pubsub service: " + pubsubService);
         return null;
     }
@@ -491,10 +473,10 @@ implements InterestManager {
     public void sendCleanupJoinedInterestGroupMessage(String remoteJID, String interestGroupID) {
 
         logger.info("sendCleanupJoinedInterestGroupMessage: remoteJID: " + remoteJID + ", IGID: " +
-            interestGroupID);
-        String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(remoteJID);
-        IQ msg = InterestGrptManagementIQFactory.createCleanupJoinedInterestGroupMessage(coreJIDPlusResource,
-            interestGroupID);
+                    interestGroupID);
+        final String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(remoteJID);
+        final IQ msg = InterestGrptManagementIQFactory.createCleanupJoinedInterestGroupMessage(
+            coreJIDPlusResource, interestGroupID);
 
         // logger.debug("sendDeleteJoinedInterestGroupMessage: [" + msg.toXML() + "]");
 
@@ -502,7 +484,7 @@ implements InterestManager {
         // Deal with acknowledgement asynchronously
         try {
             coreConnection.sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("sendDeleteJoinedInterestGroupMessage: " + e.getMessage());
         }
     }
@@ -511,10 +493,10 @@ implements InterestManager {
     public void sendDeleteJoinedInterestGroupMessage(String coreJID, String interestGroupID) {
 
         logger.info("sendDeleteJoinedInterestGroupMessage: remoteJID: " + coreJID + ", IGID: " +
-            interestGroupID);
-        String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
-        IQ msg = InterestGrptManagementIQFactory.createDeleteJoinedInterestGroupMessage(coreJIDPlusResource,
-            interestGroupID);
+                    interestGroupID);
+        final String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
+        final IQ msg = InterestGrptManagementIQFactory.createDeleteJoinedInterestGroupMessage(
+            coreJIDPlusResource, interestGroupID);
 
         // logger.debug("sendDeleteJoinedInterestGroupMessage: [" + msg.toXML() + "]");
 
@@ -522,7 +504,7 @@ implements InterestManager {
         // Deal with acknowledgement asynchronously
         try {
             coreConnection.sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("sendDeleteJoinedInterestGroupMessage: " + e.getMessage());
         }
 
@@ -532,9 +514,9 @@ implements InterestManager {
     public void sendDeleteJoinedProductMessage(String coreJID, String productID) {
 
         logger.info("sendDeleteJoinedProductMessage");
-        String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
-        IQ msg = InterestGrptManagementIQFactory.createDeleteJoinedProductMessage(coreJIDPlusResource,
-            productID);
+        final String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
+        final IQ msg = InterestGrptManagementIQFactory.createDeleteJoinedProductMessage(
+            coreJIDPlusResource, productID);
 
         logger.debug(msg.toXML());
 
@@ -542,7 +524,7 @@ implements InterestManager {
         // Deal with acknowledgement asynchronously
         try {
             coreConnection.sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("Error sending delete joined product message: " + e.getMessage());
             logger.debug("sendDeleteJoinedProductMessage: " + msg.toXML());
         }
@@ -558,13 +540,13 @@ implements InterestManager {
                                                        String userID,
                                                        String product) {
 
-        logger.info("sendJoinedPublishProductRequestMessage: interestGroupID=" + interestGroupId +
-            " owningCore:" + owningCore);
+        logger.info("sendJoinedPublishProductRequestMessage: interestGroupID: " + interestGroupId +
+                    " owningCore:" + owningCore);
 
-        String owningCoreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(owningCore);
+        final String owningCoreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(owningCore);
 
         // TODO: Need the other stuff, e.g. name, description, lat/long ???
-        StringBuffer params = new StringBuffer();
+        final StringBuffer params = new StringBuffer();
         params.append(" interestGroupId='" + interestGroupId + "'");
         params.append(" productId='" + productId + "'");
         params.append(" productType='" + productType + "'");
@@ -573,25 +555,23 @@ implements InterestManager {
         params.append(" owningCore='" + owningCore + "'");
         params.append(" requestingCore='" + coreConnection.getCoreNameFromJID(getOwnJid()) + "'>");
 
-        HashMap<String, String> config = new HashMap<String, String>();
+        final HashMap<String, String> config = new HashMap<String, String>();
 
-        StringBuffer productEntry = new StringBuffer();
+        final StringBuffer productEntry = new StringBuffer();
         productEntry.append("<ProductPayload>");
         productEntry.append(product);
         productEntry.append("</ProductPayload>");
 
-        IQ msg = InterestGrptManagementIQFactory.createJoinedPublishProductRequestMessage(owningCoreJIDPlusResource,
-            params.toString(),
-            config,
-            productEntry.toString());
+        final IQ msg = InterestGrptManagementIQFactory.createJoinedPublishProductRequestMessage(
+            owningCoreJIDPlusResource, params.toString(), config, productEntry.toString());
 
-        // logger.debug(msg.toXML());
+        logger.debug(msg.toXML());
 
         // Fire off the join request
         // Deal with acknowledgement asynchronously
         try {
             coreConnection.sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("Error sending join published product request message: " + e.getMessage());
             logger.debug("sendJoinedPublishProductRequestMessage: " + msg.toXML());
         }
@@ -604,13 +584,13 @@ implements InterestManager {
                                 List<String> workProductTypesToShare) {
 
         logger.info("sendJoinMessage to " + coreJID + " with interestGroupID=" +
-            interestGroup.interestGroupID);
-        HashMap<String, String> config = new HashMap<String, String>();
+                    interestGroup.interestGroupID);
+        final HashMap<String, String> config = new HashMap<String, String>();
 
-        StringBuffer sb = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
 
         sb.append("<workProductTypesToShare>");
-        for (String workProductType : workProductTypesToShare) {
+        for (final String workProductType : workProductTypesToShare) {
             sb.append("<item>");
             sb.append(workProductType);
             sb.append("</item>");
@@ -621,26 +601,24 @@ implements InterestManager {
         sb.append(interestGroupInfo);
         sb.append("</info>");
 
-        StringBuffer interestGroupInfoBuffer = new StringBuffer();
+        final StringBuffer interestGroupInfoBuffer = new StringBuffer();
         interestGroupInfoBuffer.append(" uuid='" + interestGroup.interestGroupID + "'");
         interestGroupInfoBuffer.append(" interestGroupType='" + interestGroup.interestGroupType +
-            "'");
+                                       "'");
         interestGroupInfoBuffer.append(" owner='" + getOwnJid() + "'");
 
-        String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
+        final String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
 
-        IQ msg = InterestGrptManagementIQFactory.createJoinMessage(coreJIDPlusResource,
-            interestGroupInfoBuffer.toString(),
-            config,
-            sb.toString());
+        final IQ msg = InterestGrptManagementIQFactory.createJoinMessage(coreJIDPlusResource,
+            interestGroupInfoBuffer.toString(), config, sb.toString());
 
-        // logger.debug(msg.toXML());
+        logger.debug(msg.toXML());
 
         // Fire off the join request
         // Deal with acknowledgement asynchronously
         try {
             coreConnection.sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("Error sending join message: " + e.getMessage());
             logger.debug("sendJoinMessage: " + msg.toXML());
         }
@@ -652,28 +630,27 @@ implements InterestManager {
                                                     String status) {
 
         logger.info("sendProductPublicationStatusMessage: requestingCore=" + requestingCore +
-            " userID:" + userID + " status=[" + status + "]");
+                    " userID:" + userID + " status=[" + status + "]");
 
-        String requestingCoreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(requestingCore);
+        final String requestingCoreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(requestingCore);
 
-        StringBuffer params = new StringBuffer();
+        final StringBuffer params = new StringBuffer();
         params.append(" userID='" + userID + "'");
         params.append(" owningCore='" + coreConnection.getCoreNameFromJID(getOwnJid()) + "'>");
 
-        StringBuffer statustEntry = new StringBuffer();
+        final StringBuffer statustEntry = new StringBuffer();
         statustEntry.append("<ProductPublicationStatus>");
         statustEntry.append(status);
         statustEntry.append("</ProductPublicationStatus>");
 
-        IQ msg = InterestGrptManagementIQFactory.createProductPublicationStatusMessage(requestingCoreJIDPlusResource,
-            params.toString(),
-            statustEntry.toString());
+        final IQ msg = InterestGrptManagementIQFactory.createProductPublicationStatusMessage(
+            requestingCoreJIDPlusResource, params.toString(), statustEntry.toString());
 
         // logger.debug(msg.toXML());
 
         try {
             coreConnection.sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("Error sending product publication status message: " + e.getMessage());
             logger.debug("sendProductPublicationStatusMessage: " + msg.toXML());
         }
@@ -695,19 +672,17 @@ implements InterestManager {
     @Override
     public void sendResignMessage(String coreJID, String interestGroupID, String interestGroupName) {
 
-        String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
+        final String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
         logger.debug("sendResignMessage: remoteJID: " + coreJIDPlusResource + ", IGID: " +
-            interestGroupID + ", IG Name: " + interestGroupName);
-        IQ msg = InterestGrptManagementIQFactory.createResignMessage(coreJIDPlusResource,
-            interestGroupID,
-            interestGroupName,
-            getOwnJid());
+                     interestGroupID + ", IG Name: " + interestGroupName);
+        final IQ msg = InterestGrptManagementIQFactory.createResignMessage(coreJIDPlusResource,
+            interestGroupID, interestGroupName, getOwnJid());
 
         // Fire off the resign message
         // Deal with acknowledgement asynchronously
         try {
             coreConnection.sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("Error sending resign message: " + e.getMessage());
             logger.debug("sendResignMessage: " + msg.toXML());
         }
@@ -720,10 +695,9 @@ implements InterestManager {
                                          String interestGroupOwner) {
 
         logger.debug("sendResignRequestMessage");
-        String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
-        IQ msg = InterestGrptManagementIQFactory.createResigRequestMessage(coreJIDPlusResource,
-            interestGroupID,
-            interestGroupOwner);
+        final String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
+        final IQ msg = InterestGrptManagementIQFactory.createResigRequestMessage(
+            coreJIDPlusResource, interestGroupID, interestGroupOwner);
 
         // logger.debug(msg.toXML());
 
@@ -731,7 +705,7 @@ implements InterestManager {
         // Deal with acknowledgement asynchronously
         try {
             coreConnection.sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("Error sending resign request message: " + e.getMessage());
             logger.debug("sendResignRequestMessage: " + msg.toXML());
         }
@@ -742,11 +716,10 @@ implements InterestManager {
     public void sendUpdateJoinMessage(String coreJID, String interestGroupID, String productType) {
 
         logger.info("sendUpdateJoinMessage  interestGroupID=" + interestGroupID + " wpType=" +
-            productType);
-        String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
-        IQ msg = InterestGrptManagementIQFactory.createUpdateJoinMessage(coreJIDPlusResource,
-            interestGroupID,
-            productType);
+                    productType);
+        final String coreJIDPlusResource = coreConnection.getJIDPlusResourceFromCoreName(coreJID);
+        final IQ msg = InterestGrptManagementIQFactory.createUpdateJoinMessage(coreJIDPlusResource,
+            interestGroupID, productType);
 
         logger.debug(msg.toXML());
 
@@ -754,7 +727,7 @@ implements InterestManager {
         // Deal with acknowledgement asynchronously
         try {
             coreConnection.sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("Error sending update join message: " + e.getMessage());
             logger.debug("sendUpdateJoinMessage: " + msg.toXML());
         }
@@ -810,9 +783,8 @@ implements InterestManager {
     @Override
     public List<String> subscribeToNode(String pubsubService, String node) throws XMPPException {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             return nodeManagers.get(pubsubService).subscribeToNode(node, listenerAdapter);
-        }
         logger.error("No node manager for pubsub service: " + pubsubService);
         return null;
     }
@@ -820,14 +792,14 @@ implements InterestManager {
     @Override
     public String toString() {
 
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         final String newLine = System.getProperty("line.separator");
 
         result.append(this.getClass().getName() + " Object {");
         result.append(newLine);
 
         result.append(" Subscription Managers: ");
-        for (String key : nodeManagers.keySet()) {
+        for (final String key : nodeManagers.keySet()) {
             result.append(nodeManagers.get(key));
             result.append(newLine);
         }
@@ -847,11 +819,10 @@ implements InterestManager {
     @Override
     public void unsubscribeAll(String pubsubService) {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             nodeManagers.get(pubsubService).unsubscribeAll();
-        } else {
+        else
             logger.error("No node manager for pubsub service: " + pubsubService);
-        }
     }
 
     /*
@@ -864,11 +835,10 @@ implements InterestManager {
     @Override
     public void unsubscribeAllForInterestGroup(String pubsubService, String uuid) {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             nodeManagers.get(pubsubService).unsubscribeAll(uuid);
-        } else {
+        else
             logger.error("No node manager for pubsub service: " + pubsubService);
-        }
     }
 
     /*
@@ -880,11 +850,10 @@ implements InterestManager {
     @Override
     public void updateSubscriptionMap(String pubsubService) {
 
-        if (nodeManagers.containsKey(pubsubService)) {
+        if (nodeManagers.containsKey(pubsubService))
             nodeManagers.get(pubsubService).updateSubscriptionMap();
-        } else {
+        else
             logger.error("No node manager for pubsub service: " + pubsubService);
-        }
     }
 
 }
