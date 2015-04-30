@@ -5,7 +5,7 @@ import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.packet.StreamError;
 
 public class ConnectionCleanup
-    implements ConnectionListener {
+implements ConnectionListener {
 
     private final Logger logger = Logger.getLogger(this.getClass());
 
@@ -23,26 +23,24 @@ public class ConnectionCleanup
     @Override
     public void connectionClosed() {
 
-        logger.info("connectionClosed => " + name);
-        coreConnection.setConnected(false);
+        logger.info("connectionClosed: [" + name + "]");
     }
 
     @Override
     public void connectionClosedOnError(Exception e) {
 
-        logger.error("connectionClosedOnError: " + name);
+        logger.error("connectionClosedOnError: [" + name + "]");
         if (e instanceof org.jivesoftware.smack.XMPPException) {
-            org.jivesoftware.smack.XMPPException xmppEx = (org.jivesoftware.smack.XMPPException) e;
-            StreamError error = xmppEx.getStreamError();
+            final org.jivesoftware.smack.XMPPException xmppEx = (org.jivesoftware.smack.XMPPException) e;
+            final StreamError error = xmppEx.getStreamError();
 
             // Make sure the error is not null
             if (error != null) {
-                String reason = error.getCode();
+                final String reason = error.getCode();
                 logger.error("connectionClosedOnError: " + reason);
 
                 if ("conflict".equals(reason)) {
                     // on conflict smack will not automatically try to reconnect
-                    coreConnection.setConnected(false);
                     logger.error("connectionClosedOnError: another XMPP client logged in with the core's full JID so we cannot try to reconnect.");
                     return;
                 }
@@ -67,10 +65,7 @@ public class ConnectionCleanup
     @Override
     public void reconnectionSuccessful() {
 
-        logger.info("reconnectionSuccessful: " + name);
-        coreConnection.setConnected(true);
+        logger.info("reconnectionSuccessful: [" + name + "]");
         coreConnection.sendHeartBeat();
-        coreConnection.setConnected(true);
     }
-
 }

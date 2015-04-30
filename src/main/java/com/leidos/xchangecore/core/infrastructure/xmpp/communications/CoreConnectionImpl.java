@@ -56,12 +56,14 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.communications.util.XmppU
  */
 
 public class CoreConnectionImpl
-    implements CoreConnection {
+implements CoreConnection {
 
     public static final int BAD_FORMAT_CODE = 400;
     public static final String NOT_WELLFORMED_MSG = "Packet XML was not well-formed";
     public static final String BAD_FORMAT_CONDITION = "bad-format";
-    protected Properties connectionProperties = null;
+
+    protected static XMPPConnection xmppConnection = null;
+    protected static Properties connectionProperties = null;
 
     // Properties
     private String debug = "false";
@@ -76,16 +78,15 @@ public class CoreConnectionImpl
     private String jid = null;
     private String jidPlusResource = null;
     private String interestGroupRoot = "/interestGroup";
+
     private int waitTimeInSeconds = 5;
 
     private int pingInterval;
 
     // private String coreConfigFile = null;
     private String coreLatLon;
-
     // privates
     private ConnectionConfiguration config = null;
-    protected XMPPConnection xmppConnection = null;
     private ServiceDiscoveryManager discoManager;
     private RosterManager rosterManager;
     private PingManager pingManager;
@@ -93,9 +94,9 @@ public class CoreConnectionImpl
     private final Logger logger = Logger.getLogger(this.getClass());
 
     // Manager to handle file transfers for the interest group
-    InterestGroupFileManager fileManager = null;
+    private InterestGroupFileManager fileManager = null;
 
-    boolean connected = false;
+    // boolean connected = false;
 
     private MessageChannel coreStatusUpdateChannel;
 
@@ -155,10 +156,10 @@ public class CoreConnectionImpl
         // Throw an exception if the packet XML is not well formed
         if (!XmppUtils.isWellFormed(packet.toXML())) {
             final XMPPError error = new XMPPError(BAD_FORMAT_CODE,
-                XMPPError.Type.MODIFY,
-                BAD_FORMAT_CONDITION,
-                NOT_WELLFORMED_MSG,
-                null);
+                                                  XMPPError.Type.MODIFY,
+                                                  BAD_FORMAT_CONDITION,
+                                                  NOT_WELLFORMED_MSG,
+                                                  null);
             throw new XMPPException(error);
         }
     }
@@ -223,7 +224,7 @@ public class CoreConnectionImpl
     @Override
     public void connect() {
 
-        if (!connected)
+        if (xmppConnection == null || xmppConnection.isAuthenticated() == false)
             try {
                 // connect and login to server
                 logger.info("     server: " + getServer());
@@ -246,7 +247,7 @@ public class CoreConnectionImpl
                         // add packet interceptor
                         final PacketFilter presenceFilter = new PacketTypeFilter(Presence.class);
                         final PresenceEnrichment presenceEnrichment = new PresenceEnrichment(pos[0],
-                            pos[1]);
+                                                                                             pos[1]);
                         xmppConnection.addPacketInterceptor(presenceEnrichment, presenceFilter);
                     }
                 } else
@@ -255,7 +256,7 @@ public class CoreConnectionImpl
                 logger.info("===> login as " + getUsername() + " resource=" + getResource());
                 xmppConnection.connect();
                 xmppConnection.login(getUsername(), getPassword(), getResource());
-                connected = true;
+                // ddh connected = true;
 
                 // Set my resource priority
                 setResourcePriority();
@@ -360,14 +361,12 @@ public class CoreConnectionImpl
             logger.error("null connection at disconnect");
             return;
         }
-        if (xmppConnection.isConnected()) {
+        if (xmppConnection.isConnected())
             // TODO: might add a disconnect listener interface to and have the InterestManagement
             // class register and then do this unsubscribeAll if we really need to do this
             // interestManager.unsubscribeAll();
             xmppConnection.disconnect();
-            connected = xmppConnection.isConnected();
-        }
-        // else already disconnected so cannot clean up
+        // ddh connected = xmppConnection.isConnected();
     }
 
     @Override
@@ -409,7 +408,7 @@ public class CoreConnectionImpl
                         logger.error("XMPP Server not found (not connected)");
                     else
                         logger.error("XMPP Server not found error. pubsub." +
-                                     xmppConnection.getHost() + " may not be resolvable");
+                            xmppConnection.getHost() + " may not be resolvable");
                 } else {
                     logger.error("discovering items for node: " + node);
                     if (err != null) {
@@ -699,12 +698,12 @@ public class CoreConnectionImpl
     @Override
     public void initialize() {
 
-        logger.info("initialize: username: " + username);
+        logger.info("initialize: ... start ...");
         // Configure and connect;
         assert coreStatusUpdateChannel != null;
         configure();
         connect();
-        logger.info("initilaze: ... done ...");
+        logger.info("initialize: ... done ...");
     }
 
     /*
@@ -715,7 +714,7 @@ public class CoreConnectionImpl
     @Override
     public boolean isConnected() {
 
-        return connected;
+        return xmppConnection.isConnected();
     }
 
     /*
@@ -795,7 +794,7 @@ public class CoreConnectionImpl
             if (isOnline) {
                 if (subscription.equals(ItemType.both)) {
                     logger.debug("resetRemoteStatus: set the remoteJID: " + remoteJID + " to " +
-                                 (isOnline ? "available" : "unavailable"));
+                        (isOnline ? "available" : "unavailable"));
                     sendCoreStatusUpdate(remoteJID, "available", "", "");
                 }
             } else if (subscription.equals(ItemType.both))
@@ -811,12 +810,12 @@ public class CoreConnectionImpl
                                      String longitude) {
 
         logger.info("sendCoreStatusUpdate: JID: " + remotJID + ", status: " + coreStatus +
-                    (latitude.length() > 0 ? ", " + latitude + "/" + longitude : ""));
+            (latitude.length() > 0 ? ", " + latitude + "/" + longitude : ""));
 
         final CoreStatusUpdateMessage msg = new CoreStatusUpdateMessage(remotJID,
-            coreStatus,
-            latitude,
-            longitude);
+                                                                        coreStatus,
+                                                                        latitude,
+                                                                        longitude);
         final Message<CoreStatusUpdateMessage> update = new GenericMessage<CoreStatusUpdateMessage>(msg);
         synchronized (this) {
             getCoreStatusUpdateChannel().send(update);
@@ -889,11 +888,6 @@ public class CoreConnectionImpl
     public void setAgreementDAO(AgreementDAO agreementDAO) {
 
         this.agreementDAO = agreementDAO;
-    }
-
-    public void setConnected(boolean connected) {
-
-        this.connected = connected;
     }
 
     /*
@@ -1027,9 +1021,9 @@ public class CoreConnectionImpl
     protected void setResourcePriority() {
 
         xmppConnection.sendPacket(new Presence(Presence.Type.available,
-                                               null,
-                                               77,
-                                               Presence.Mode.available));
+            null,
+            77,
+            Presence.Mode.available));
     }
 
     /*
