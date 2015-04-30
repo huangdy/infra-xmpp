@@ -56,18 +56,17 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.communications.util.XmppU
  */
 
 public class CoreConnectionImpl
-implements CoreConnection {
+    implements CoreConnection {
 
     public static final int BAD_FORMAT_CODE = 400;
     public static final String NOT_WELLFORMED_MSG = "Packet XML was not well-formed";
     public static final String BAD_FORMAT_CONDITION = "bad-format";
 
-    protected static XMPPConnection xmppConnection = null;
-    protected static Properties connectionProperties = null;
+    protected XMPPConnection xmppConnection = null;
+    protected Properties connectionProperties = null;
 
     // Properties
     private String debug = "false";
-    private final String name = "Test Client";
     private String server = null;
     private String servername = null;
     private String port = "5222";
@@ -156,10 +155,10 @@ implements CoreConnection {
         // Throw an exception if the packet XML is not well formed
         if (!XmppUtils.isWellFormed(packet.toXML())) {
             final XMPPError error = new XMPPError(BAD_FORMAT_CODE,
-                                                  XMPPError.Type.MODIFY,
-                                                  BAD_FORMAT_CONDITION,
-                                                  NOT_WELLFORMED_MSG,
-                                                  null);
+                XMPPError.Type.MODIFY,
+                BAD_FORMAT_CONDITION,
+                NOT_WELLFORMED_MSG,
+                null);
             throw new XMPPException(error);
         }
     }
@@ -224,78 +223,76 @@ implements CoreConnection {
     @Override
     public void connect() {
 
-        if (xmppConnection == null || xmppConnection.isAuthenticated() == false)
-            try {
-                // connect and login to server
-                logger.info("     server: " + getServer());
-                logger.info("       port: " + getPort());
-                logger.info("   username: " + getUsername());
-                logger.info("   resource: " + getResource());
+        try {
+            // connect and login to server
+            logger.info("    server: " + getServer());
+            logger.info("      port: " + getPort());
+            logger.info("  username: " + getUsername());
+            logger.info("  resource: " + getResource());
 
-                Connection.DEBUG_ENABLED = getDebugBoolean();
+            Connection.DEBUG_ENABLED = getDebugBoolean();
 
-                config = new ConnectionConfiguration(getServer(), getPortInt());
+            config = new ConnectionConfiguration(getServer(), getPortInt());
 
-                // If xmppConnection is not created yet then create one. This may have been
-                // configured via Spring or during testing setup.
-                xmppConnection = new XMPPConnection(config);
+            // If xmppConnection is not created yet then create one. This may have been
+            // configured via Spring or during testing setup.
+            xmppConnection = new XMPPConnection(config);
 
-                if (getCoreLatLon() != null && getCoreLatLon().length() > 0) {
-                    final String[] pos = getCoreLatLon().split("[ ,]");
-                    if (pos.length == 2) {
-                        logger.debug("adding geo to presence: " + getCoreLatLon());
-                        // add packet interceptor
-                        final PacketFilter presenceFilter = new PacketTypeFilter(Presence.class);
-                        final PresenceEnrichment presenceEnrichment = new PresenceEnrichment(pos[0],
-                                                                                             pos[1]);
-                        xmppConnection.addPacketInterceptor(presenceEnrichment, presenceFilter);
-                    }
-                } else
-                    logger.debug("No lat/lon configured");
+            logger.info("===> login as " + getUsername() + " resource=" + getResource());
+            xmppConnection.connect();
+            xmppConnection.login(getUsername(), getPassword(), getResource());
 
-                logger.info("===> login as " + getUsername() + " resource=" + getResource());
-                xmppConnection.connect();
-                xmppConnection.login(getUsername(), getPassword(), getResource());
-                // ddh connected = true;
-
-                // Set my resource priority
-                setResourcePriority();
-
-                // Create the roster manager
-                logger.info("Instantiating RosterManger");
-                rosterManager = new RosterManager(this);
-
-                // Set the name of this connection to the roster name for this core
-                if (rosterManager.getRosterNameFromJID(getJID()) != null) {
-                    logger.info("====> Set connection name to " +
-                                rosterManager.getRosterNameFromJID(getJID()));
-                    logger.debug("Adding ourself: JID=" + getJID() + " name=" +
-                                 rosterManager.getRosterNameFromJID(getJID()) + " to roster");
-                    rosterManager.createEntry(getJID(),
-                        rosterManager.getRosterNameFromJID(getJID()), null);
+            if (getCoreLatLon() != null && getCoreLatLon().length() > 0) {
+                final String[] pos = getCoreLatLon().split("[ ,]");
+                if (pos.length == 2) {
+                    logger.debug("adding geo to presence: " + getCoreLatLon());
+                    // add packet interceptor
+                    final PacketFilter presenceFilter = new PacketTypeFilter(Presence.class);
+                    final PresenceEnrichment presenceEnrichment = new PresenceEnrichment(pos[0],
+                                                                                         pos[1]);
+                    xmppConnection.addPacketInterceptor(presenceEnrichment, presenceFilter);
                 }
+            } else
+                logger.debug("No lat/lon configured");
 
-                logger.info("initialize PingManger ...");
-                pingManager = new PingManager(this, getPingInterval());
+            // Set my resource priority
+            setResourcePriority();
 
-                // Two different attempts to get things to shutdown cleanly
-                // neither seems to work correctly, each call to disconnect hangs
-                xmppConnection.addConnectionListener(new ConnectionCleanup(getServer(), this));
+            // Create the roster manager
+            logger.info("Instantiating RosterManger");
+            rosterManager = new RosterManager(this);
 
-                // Obtain the ServiceDiscoveryManager associated with my XMPPConnection
-                discoManager = ServiceDiscoveryManager.getInstanceFor(xmppConnection);
-
-                fileManager = new InterestGroupFileManager(this);
-            } catch (final XMPPException e) {
-                e.printStackTrace();
-                logger.error("CoreConnection XMPPException connecting: " + e);
-                return;
-            } catch (final Exception e) {
-                e.printStackTrace();
-                logger.error("CoreConnection Exception connecting: " + e.getMessage() + " " +
-                             e.toString());
-                return;
+            // Set the name of this connection to the roster name for this core
+            if (rosterManager.getRosterNameFromJID(getJID()) != null) {
+                logger.info("====> Set connection name to " +
+                            rosterManager.getRosterNameFromJID(getJID()));
+                logger.debug("Adding ourself: JID=" + getJID() + " name=" +
+                             rosterManager.getRosterNameFromJID(getJID()) + " to roster");
+                rosterManager.createEntry(getJID(), rosterManager.getRosterNameFromJID(getJID()),
+                    null);
             }
+
+            logger.info("initialize PingManger ...");
+            pingManager = new PingManager(this, getPingInterval());
+
+            // Two different attempts to get things to shutdown cleanly
+            // neither seems to work correctly, each call to disconnect hangs
+            xmppConnection.addConnectionListener(new ConnectionCleanup(getServer(), this));
+
+            // Obtain the ServiceDiscoveryManager associated with my XMPPConnection
+            discoManager = ServiceDiscoveryManager.getInstanceFor(xmppConnection);
+
+            fileManager = new InterestGroupFileManager(this);
+        } catch (final XMPPException e) {
+            e.printStackTrace();
+            logger.error("CoreConnection XMPPException connecting: " + e);
+            return;
+        } catch (final Exception e) {
+            e.printStackTrace();
+            logger.error("CoreConnection Exception connecting: " + e.getMessage() + " " +
+                         e.toString());
+            return;
+        }
     }
 
     /*
@@ -408,7 +405,7 @@ implements CoreConnection {
                         logger.error("XMPP Server not found (not connected)");
                     else
                         logger.error("XMPP Server not found error. pubsub." +
-                            xmppConnection.getHost() + " may not be resolvable");
+                                     xmppConnection.getHost() + " may not be resolvable");
                 } else {
                     logger.error("discovering items for node: " + node);
                     if (err != null) {
@@ -794,7 +791,7 @@ implements CoreConnection {
             if (isOnline) {
                 if (subscription.equals(ItemType.both)) {
                     logger.debug("resetRemoteStatus: set the remoteJID: " + remoteJID + " to " +
-                        (isOnline ? "available" : "unavailable"));
+                                 (isOnline ? "available" : "unavailable"));
                     sendCoreStatusUpdate(remoteJID, "available", "", "");
                 }
             } else if (subscription.equals(ItemType.both))
@@ -810,12 +807,12 @@ implements CoreConnection {
                                      String longitude) {
 
         logger.info("sendCoreStatusUpdate: JID: " + remotJID + ", status: " + coreStatus +
-            (latitude.length() > 0 ? ", " + latitude + "/" + longitude : ""));
+                    (latitude.length() > 0 ? ", " + latitude + "/" + longitude : ""));
 
         final CoreStatusUpdateMessage msg = new CoreStatusUpdateMessage(remotJID,
-                                                                        coreStatus,
-                                                                        latitude,
-                                                                        longitude);
+            coreStatus,
+            latitude,
+            longitude);
         final Message<CoreStatusUpdateMessage> update = new GenericMessage<CoreStatusUpdateMessage>(msg);
         synchronized (this) {
             getCoreStatusUpdateChannel().send(update);
@@ -1021,9 +1018,9 @@ implements CoreConnection {
     protected void setResourcePriority() {
 
         xmppConnection.sendPacket(new Presence(Presence.Type.available,
-            null,
-            77,
-            Presence.Mode.available));
+                                               null,
+                                               77,
+                                               Presence.Mode.available));
     }
 
     /*
