@@ -55,14 +55,14 @@ public class CommunicationsServiceXmppImpl {
 
         logger.debug("agreementRosterHandler: roster changes for " + message.getCores().size() +
                      " cores");
-        Map<String, AgreementRosterMessage.State> cores = message.getCores();
+        final Map<String, AgreementRosterMessage.State> cores = message.getCores();
 
-        Set<String> keys = cores.keySet();
+        final Set<String> keys = cores.keySet();
 
-        for (String remoteJID : keys) {
+        for (final String remoteJID : keys) {
             // log.debug("agreementRosterHandler: core:" + key + ", state:" + cores.get(key));
-            Pattern pattern = Pattern.compile("(.*)@(.*)");
-            Matcher matcher = pattern.matcher(remoteJID);
+            final Pattern pattern = Pattern.compile("(.*)@(.*)");
+            final Matcher matcher = pattern.matcher(remoteJID);
             if (matcher.matches()) {
                 logger.debug("agreementRosterHandler: core: " + remoteJID + ", username: " +
                              matcher.group(1) + ", hostname: " + matcher.group(2));
@@ -92,15 +92,14 @@ public class CommunicationsServiceXmppImpl {
                         break;
                     }
 
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     logger.info("Error: Caught exception while attempting to add roster entry for " +
                                 matcher.group(2));
                     e.printStackTrace();
                 }
-            } else {
+            } else
                 logger.error("******* Receiving invalid JID in agreementRosterHandler message - JID=" +
                              remoteJID + "   expected format[userName@hostName]");
-            }
 
         }
     }
@@ -116,33 +115,31 @@ public class CommunicationsServiceXmppImpl {
 
         if (message.getMessageType().equals("XMPP_MESSAGE")) {
 
-            org.jivesoftware.smack.packet.Message msg = NotificationExtensionFactory.createNotificationMessage(message.getToCore(),
-                message.getBody(),
-                message.getXhtml(),
-                message.getMessage());
+            final org.jivesoftware.smack.packet.Message msg = NotificationExtensionFactory.createNotificationMessage(
+                message.getToCore(), message.getBody(), message.getXhtml(), message.getMessage());
             // msg.setTo(message.getToCore());
             // msg.addBody(null, message.getMessage());
             try {
                 interestGroupManager.getCoreConnection().sendPacketCheckWellFormed(msg);
-            } catch (XMPPException e) {
+            } catch (final XMPPException e) {
                 logger.error("Error sending XMPP message: " + e.getMessage());
             }
             return;
         }
 
-        String remoteCoreJID = interestGroupManager.getCoreConnection().getJIDFromCoreName(message.getToCore());
-        String remoteCoreJIDWithResource = interestGroupManager.getCoreConnection().getJIDPlusResourceFromCoreName(message.getToCore());
+        final String remoteCoreJID = interestGroupManager.getCoreConnection().getJIDFromCoreName(
+            message.getToCore());
+        final String remoteCoreJIDWithResource = interestGroupManager.getCoreConnection().getJIDPlusResourceFromCoreName(
+            message.getToCore());
 
-        IQ msg = Core2CoreMessageIQFactory.createCore2CoreMessage(message.getMessage(),
-            message.getMessageType(),
-            remoteCoreJID,
-            remoteCoreJIDWithResource);
+        final IQ msg = Core2CoreMessageIQFactory.createCore2CoreMessage(message.getMessage(),
+            message.getMessageType(), remoteCoreJID, remoteCoreJIDWithResource);
 
         logger.debug(msg.toXML());
 
         try {
             interestGroupManager.getCoreConnection().sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("Error sending core 2 core message: " + e.getMessage());
         }
     }
@@ -190,26 +187,21 @@ public class CommunicationsServiceXmppImpl {
 
     public void joinedPublishProductRequestHandler(JoinedPublishProductRequestMessage message) {
 
-        String interestGroupID = message.getInterestGroupId();
-        String owningCore = message.getOwningCore();
-        String productId = message.getProductId();
-        String productType = message.getProductType();
-        String act = message.getAct();
-        String product = message.getWorkProduct();
-        String userID = message.getUserID();
+        final String interestGroupID = message.getInterestGroupId();
+        final String owningCore = message.getOwningCore();
+        final String productId = message.getProductId();
+        final String productType = message.getProductType();
+        final String act = message.getAct();
+        final String product = message.getWorkProduct();
+        final String userID = message.getUserID();
 
         logger.debug("joinedPublishProductRequestHandler: act=" + act + "interestGroupID=" +
                      interestGroupID + " owningCore=" + owningCore + " productId=" + productId +
                      " productType=" + productType + " userID=" + userID);
 
         // send XEP message to the owning core's CommunicationXmppImpl
-        interestGroupManager.requestJoinedPublishProduct(interestGroupID,
-            owningCore,
-            productId,
-            productType,
-            act,
-            userID,
-            product);
+        interestGroupManager.requestJoinedPublishProduct(interestGroupID, owningCore, productId,
+            productType, act, userID, product);
 
     }
 
@@ -223,7 +215,7 @@ public class CommunicationsServiceXmppImpl {
         logger.debug("newInterestGroupCreatedHandler: IGID: " + message.getInterestGroupID() +
                      " interestGroupType: " + message.getInterestGroupType());
 
-        InterestGroup interestGroup = new InterestGroup();
+        final InterestGroup interestGroup = new InterestGroup();
         interestGroup.interestGroupID = message.getInterestGroupID();
         interestGroup.interestGroupType = message.getInterestGroupType();
         interestGroup.interestGroupOwner = message.getOwningCore();
@@ -236,18 +228,16 @@ public class CommunicationsServiceXmppImpl {
             if (message.restored) {
                 logger.debug("newInterestGroupCreatedHandler:  sharingStatus: " +
                              message.sharingStatus);
-                if (message.sharingStatus.equals(InterestGroupStateNotificationMessage.SharingStatus.Joined.toString())) {
+                if (message.sharingStatus.equals(InterestGroupStateNotificationMessage.SharingStatus.Joined.toString()))
                     interestGroupManager.restoreJoinedInterestGroup(interestGroup,
                         message.getOwnerProperties());
-                } else if (message.sharingStatus.equals(InterestGroupStateNotificationMessage.SharingStatus.Shared.toString())) {
+                else if (message.sharingStatus.equals(InterestGroupStateNotificationMessage.SharingStatus.Shared.toString()))
                     interestGroupManager.restoreSharedInterestGroup(interestGroup,
                         message.getSharedCoreList());
-                } else {
+                else
                     interestGroupManager.restoreOwnedInterestGroup(interestGroup);
-                }
-            } else {
+            } else
                 interestGroupManager.createInterestGroup(interestGroup);
-            }
         }
     }
 
@@ -268,20 +258,19 @@ public class CommunicationsServiceXmppImpl {
      */
     public void productPublicationHandler(ProductPublicationMessage message) {
 
-        ProductPublicationMessage.PublicationType pubType = message.getPubType();
-        String interestGroupID = message.getInterestGroupID();
-        String wpID = message.getProductID();
-        String wpType = message.getProductType();
-        String wp = message.getProduct();
+        final ProductPublicationMessage.PublicationType pubType = message.getPubType();
+        final String interestGroupID = message.getInterestGroupID();
+        final String wpID = message.getProductID();
+        final String wpType = message.getProductType();
+        final String wp = message.getProduct();
 
         logger.debug("productPublicationHandler: interestGroupID=" + interestGroupID + " wpID=" +
                      wpID + " wpType=" + wpType + " pubType=" + pubType);
 
-        if (pubType.equals(ProductPublicationMessage.PublicationType.Publish)) {
+        if (pubType.equals(ProductPublicationMessage.PublicationType.Publish))
             interestGroupManager.publishWorkProduct(interestGroupID, wpID, wpType, wp);
-        } else if (pubType.equals(ProductPublicationMessage.PublicationType.Delete)) {
+        else if (pubType.equals(ProductPublicationMessage.PublicationType.Delete))
             interestGroupManager.deleteWorkProduct(wpID, wpType, interestGroupID);
-        }
     }
 
     // This method is handled in the owning core
@@ -289,9 +278,9 @@ public class CommunicationsServiceXmppImpl {
     // back to the requesting core via the XMPP connection
     public void productPublicationStatusHandler(ProductPublicationStatusMessage message) {
 
-        String userID = message.getUserID();
-        String requestingCore = message.getRequestingCore();
-        String status = message.getStatus();
+        final String userID = message.getUserID();
+        final String requestingCore = message.getRequestingCore();
+        final String status = message.getStatus();
 
         logger.debug("productPublicationStatusHandler: userID=" + userID + " requestingCore=" +
                      requestingCore + " status=[" + status + "]");
@@ -311,20 +300,20 @@ public class CommunicationsServiceXmppImpl {
         // add ourself
         rosterStatusMap.put(interestGroupManager.getCoreConnection().getJID(), "available");
 
-        CoreRosterMessage msg = new CoreRosterMessage(rosterStatusMap);
-        Message<CoreRosterMessage> response = new GenericMessage<CoreRosterMessage>(msg);
+        final CoreRosterMessage msg = new CoreRosterMessage(rosterStatusMap);
+        final Message<CoreRosterMessage> response = new GenericMessage<CoreRosterMessage>(msg);
         coreRosterChannel.send(response);
     }
 
     private void sendRescindAgreementMessage(String remoteJID) {
 
-        IQ msg = Core2CoreMessageIQFactory.createRescindAgreementMessage(remoteJID);
+        final IQ msg = Core2CoreMessageIQFactory.createRescindAgreementMessage(remoteJID);
 
         logger.debug("sendRescindAgreementMessage: " + msg.toXML());
 
         try {
             interestGroupManager.getCoreConnection().sendPacketCheckWellFormed(msg);
-        } catch (XMPPException e) {
+        } catch (final XMPPException e) {
             logger.error("sendRescindAgreementMessage: " + e.getMessage());
         }
     }
@@ -357,9 +346,9 @@ public class CommunicationsServiceXmppImpl {
 
     public void systemInitializedHandler(String message) {
 
-        logger.info("systemInitializedHandler - sending core roster");
+        logger.debug("systemInitializedHandler: ... start ...");
         sendCoreRoster();
-        logger.debug("systemInitializedHandler - core roster sent");
+        logger.debug("systemInitializedHandler: ... done ...");
     }
 
     public void unSubscribeHandler(UnSubscribeMessage message) {
@@ -367,8 +356,9 @@ public class CommunicationsServiceXmppImpl {
         logger.debug("unSubscribeHandler: coreJID: " + message.getCoreJID() + ", IGID: " +
                      message.getInterestGroupID());
 
-        String pubSubSvc = "pubsub." +
-                           message.getCoreJID().substring(message.getCoreJID().indexOf("@") + 1);
+        final String pubSubSvc = "pubsub." +
+            message.getCoreJID().substring(
+                message.getCoreJID().indexOf("@") + 1);
         logger.debug("unSubscribeHandler: pubsubsvc: " + pubSubSvc + ", IGID: " +
                      message.getInterestGroupID());
 
