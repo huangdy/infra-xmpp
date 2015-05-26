@@ -8,7 +8,7 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Arbitrary
 public class NotificationExtensionFactory {
 
     public static final String ELEMENT_NAME = "notification";
-    public static final String NAMESPACE = "http://infrastructure.xchangecore.leidos.com/xmpp/extensions/notification#event";
+    public static final String NAMESPACE = "http://uicds.saic.com/xmpp/extensions/notification#event";
 
     public static Message createNotificationMessage(String to, String body, String xhtml,
             String notification) {

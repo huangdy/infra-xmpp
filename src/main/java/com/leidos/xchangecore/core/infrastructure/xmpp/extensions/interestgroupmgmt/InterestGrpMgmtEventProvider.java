@@ -31,7 +31,7 @@ public class InterestGrpMgmtEventProvider implements PacketExtensionProvider {
 
         InterestGrpMgmtEventExtension interestgroupmgmtEvent = new InterestGrpMgmtEventExtension(
                 "interestgroupmgmt",
-                "http://infrastructure.xchangecore.leidos.com/xmpp/extensions/interestgroupmgmt#event");
+                "http://uicds.saic.com/xmpp/extensions/interestgroupmgmt#event");
 
         // System.out.println("interestgroupmgmtEventProvider creating interestgroupmgmtEventExtension");
 

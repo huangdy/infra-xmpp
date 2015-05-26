@@ -18,7 +18,7 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Arbitrary
 public class InterestGrptManagementIQFactory {
 
     public static final String elementName = "interestgroupmgmt";
-    public static final String namespace = "http://infrastructure.xchangecore.leidos.com/xmpp/extensions/interestgroupmgmt";
+    public static final String namespace = "http://uicds.saic.com/xmpp/extensions/interestgroupmgmt";
 
     /**
      * Joining core should respond with this to acknowledge it received the join request

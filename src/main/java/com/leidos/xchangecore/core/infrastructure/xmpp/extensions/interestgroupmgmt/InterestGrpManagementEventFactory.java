@@ -16,7 +16,7 @@ import com.leidos.xchangecore.core.infrastructure.xmpp.extensions.util.Arbitrary
 public class InterestGrpManagementEventFactory {
 
     public static final String ELEMENT_NAME = "interestgroupmgmt";
-    public static final String NAMESPACE = "http://infrastructure.xchangecore.leidos.com/xmpp/extensions/interestgroupmgmt#event";
+    public static final String NAMESPACE = "http://uicds.saic.com/xmpp/extensions/interestgroupmgmt#event";
 
     /**
      * Joining a Core to an Interest Group
